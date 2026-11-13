@@ -12,5 +12,7 @@
 <nav th:replace="~{navbar :: navbarFragment}"></nav>
 <!--/* 각 페이지의 layout:fragment="content" 부분이 이 자리에 들어간다 */-->
 <th:block layout:fragment="content"></th:block>
+<!--/* Bootstrap JS: 햄버거 메뉴(collapse) 같은 동작용. bundle 은 드롭다운에 필요한 Popper 포함 */-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

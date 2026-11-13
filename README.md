@@ -316,3 +316,9 @@ com.mysite.sbb
 - 작업: `templates/navbar.html`(`th:fragment="navbarFragment"`, SBB 로고 → `/`, 로그인 자리), `layout.html`에 `<nav th:replace="~{navbar :: navbarFragment}">`. 목록 테스트에 `navbar-brand` 확인
 - 이유: 교재 3-01 — 모든 페이지 위에 같은 메뉴. layout에 직접 쓰지 않고 조각 파일로 분리해 메뉴만 따로 관리
 - 결과: 모든 화면 상단에 "SBB 로그인" 바. 로고를 누르면 `/` → `/questions`. 테스트 25개 통과
+
+### 011-02 내비게이션 바, 완료 Bootstrap JS(햄버거 메뉴)
+- 링크: [011-02](https://github.com/haroobuzii/jsb-upgrade/commit/011-02)
+- 작업: `layout.html` `</body>` 앞에 cdnjs `bootstrap.bundle.min.js` 5.3.8
+- 이유: 교재 3-01 — 화면이 좁으면 메뉴가 햄버거 버튼으로 접히는데, 펼치는 동작은 Bootstrap JS가 한다. CSS와 같은 cdnjs 방식(14163 39강). Popper가 들어 있는 bundle로 이후 드롭다운도 대비
+- 결과: 폭 375px(모바일)에서 햄버거 버튼 클릭 → "로그인" 메뉴가 펼쳐짐. 테스트 25개 통과
