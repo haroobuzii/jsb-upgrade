@@ -219,3 +219,10 @@ com.mysite.sbb
 - 작업: `MainController.root()` — `GET /` → `redirect:/question/list`. `MainControllerTest` t2(302, Location)
 - 이유: 사이트 주소만 입력해도 질문 목록이 보이게 함(교재 2-08, 14163 33강). `redirect:`는 302 응답으로 브라우저가 새 주소로 다시 요청하게 한다
 - 결과: `curl -i /` → `302`, `Location: http://localhost:8080/question/list`. 브라우저에서 `/` 접속 시 주소창이 `/question/list`로 바뀌며 목록 표시. 테스트 17개 통과
+- 정정(006-04에서 추가): 006-03 커밋 메시지의 "forward는 주소창이 바뀌지 않는다(교재 설명)"에서 "(교재 설명)"은 틀림. 교재 2-08에는 forward 설명이 없다. forward 설명 자체(서버 안에서 넘겨 주소창이 바뀌지 않음)는 맞는 내용
+
+### 006-04 질문 목록, 완료 QuestionService
+- 링크: [006-04](https://github.com/haroobuzii/jsb-upgrade/commit/006-04)
+- 작업: `QuestionService.getList()`(`@Transactional(readOnly = true)`), 컨트롤러가 리포지터리 대신 서비스 사용
+- 이유: 교재 2-09 — 여러 컨트롤러가 쓰는 처리를 모듈화하고, 컨트롤러는 요청·응답만 담당. 결정 사항대로 트랜잭션 경계는 서비스에 두고 조회는 `readOnly`. 교재가 권장하는 DTO는 교재·강사 모두 만들지 않으므로 엔티티를 템플릿에 그대로 넘김
+- 결과: 로그 `Getting transaction for [...QuestionService.getList]` → select → `Completing transaction`. 목록 화면 동일, 테스트 17개 통과
