@@ -232,3 +232,9 @@ com.mysite.sbb
 - 작업: `GET /question/detail/{id}`(`@PathVariable`), `QuestionService.getQuestion(id)`(우선 `findById(id).get()`), `templates/question/question/detail.html`, 컨트롤러 테스트 t2
 - 이유: 교재 2-10. 14163 35강처럼 3단계(상세 표시 → 목록에서 링크 → 없는 질문 404)로 나눠 진행. 1단계에서는 없는 id 처리 없이 `get()`만 써서 문제를 먼저 본다
 - 결과: `/question/detail/2` 제목·내용 표시. `/question/detail/999`는 500(`No value present`) — 다음 단계에서 404로 개선
+
+### 007-02 상세, 목록 제목에 상세 링크
+- 링크: [007-02](https://github.com/haroobuzii/jsb-upgrade/commit/007-02)
+- 작업: 목록의 제목을 `<a th:href="@{|/question/detail/${question.id}|}">`로 감쌈, 컨트롤러 테스트 t1에 링크 확인 추가
+- 이유: 교재 2-10, 14163 35강 2단계. `@{...}`는 URL을 만들 때(컨텍스트 경로 자동 포함), `|...|`는 문자열 안에 값을 끼워 넣을 때 쓴다(14163 35강 비교표)
+- 결과: 목록 HTML에 `href="/question/detail/1"`, `"/question/detail/2"`. 브라우저에서 제목 클릭 → 상세 화면 이동. 테스트 18개 통과

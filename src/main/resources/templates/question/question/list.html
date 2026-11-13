@@ -21,7 +21,10 @@
     <tr th:each="question : ${questionList}">
         <!--/* th:text: 태그 안의 내용을 값으로 바꾼다 (HTML 은 이스케이프되어 안전) */-->
         <td th:text="${question.id}"></td>
-        <td th:text="${question.subject}"></td>
+        <td>
+            <!--/* @{...}: URL 을 만든다(컨텍스트 경로 자동 포함). |...|: 문자열 안에 ${...} 값을 끼워 넣는다 */-->
+            <a th:href="@{|/question/detail/${question.id}|}" th:text="${question.subject}"></a>
+        </td>
         <td th:text="${question.createDate}"></td>
     </tr>
     </tbody>
