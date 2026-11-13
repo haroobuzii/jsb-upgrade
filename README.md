@@ -244,3 +244,9 @@ com.mysite.sbb
 - 작업: `global/exception/DataNotFoundException`(`@ResponseStatus(NOT_FOUND, reason = "entity not found")`), `getQuestion`을 `findById(id).orElseThrow(() -> new DataNotFoundException("question not found"))`로 변경, 컨트롤러 테스트 t3(404)
 - 이유: "없는 데이터"는 서버 고장(500)이 아니라 요청한 대상이 없는 것(404)이다. 구체적인 예외가 문제 파악에 도움이 된다(14163 35강 "커스텀 예외를 만드는 이유"). 교재의 `isPresent()/get()/else throw` 대신 결정 사항대로 `orElseThrow` 한 줄
 - 결과: `/question/detail/999` → 500(`No value present`)에서 404(`entity not found`)로 바뀜. 테스트 19개 통과
+
+### 007-04 상세, URL 프리픽스(@RequestMapping)
+- 링크: [007-04](https://github.com/haroobuzii/jsb-upgrade/commit/007-04)
+- 작업: `QuestionController`에 `@RequestMapping("/question")`, 메서드는 `@GetMapping("/list")`, `@GetMapping("/detail/{id}")`
+- 이유: 교재 2-11 — 한 컨트롤러의 URL이 모두 `/question`으로 시작하므로 클래스에 한 번만 적는다. URL은 그대로
+- 결과: `/question/list`, `/question/detail/2` 모두 200, 테스트 19개 그대로 통과(URL이 바뀌지 않았다는 증거)
