@@ -280,3 +280,9 @@ com.mysite.sbb
 - 작업: 목록·상세에 cdnjs Bootstrap 5.3.8 링크와 교재 2-14의 클래스(`table`, `card`, `badge`, `form-control`, `btn` 등), `loop.count` 순번, `#temporals.format(..., 'yyyy-MM-dd HH:mm')`. `style.css`에 Pretendard 글꼴(400~700)
 - 이유: 교재는 bootstrap.min.css 파일을 내려받아 static에 넣는다. 14163 39강은 cdnjs 주소로 바로 쓰고 Pretendard 글꼴을 입힌다(결정 사항). 날짜는 `2026-11-13T14:27:33.80...` 대신 읽기 쉬운 형식으로
 - 결과: 브라우저에서 목록은 어두운 머리글의 표, 상세는 카드 형태로 표시. 테스트 21개 통과
+
+### 009-03 디자인, 완료 layout.html (thymeleaf-layout-dialect)
+- 링크: [009-03](https://github.com/haroobuzii/jsb-upgrade/commit/009-03)
+- 작업: `thymeleaf-layout-dialect` 추가, `templates/layout.html`(공통 `<head>`, 부트스트랩·style.css, `layout:title-pattern="$CONTENT_TITLE | $LAYOUT_TITLE"`, `layout:fragment="content"` 자리). 목록·상세는 `layout:decorate="~{layout}"` + 자기 `<title>`과 content 조각만
+- 이유: 교재 2-15 — 모든 페이지가 같은 `<html><head>`를 반복하지 않고 틀(layout) 하나를 공유. 14168 45강처럼 `title-pattern`으로 페이지마다 다른 제목 + 사이트 이름
+- 결과: 탭 제목 `질문 목록 | SBB`, `스프링부트 모델 질문입니다. | SBB`. 화면은 009-02와 동일. 테스트에 `<title>` 확인 추가, 21개 통과
