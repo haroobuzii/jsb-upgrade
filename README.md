@@ -424,3 +424,9 @@ com.mysite.sbb
 - 작업: `DELETE /questions/{id}`(`QuestionService.delete`: 글쓴이만, 아니면 403), `static/resource/global.js`(`<a method="DELETE">` 클릭 → confirm → POST 폼 + `_method` + `_csrf` 전송), layout에서 `global.js` 로드, 상세에 글쓴이 전용 "삭제" 링크, 테스트 t11·t12
 - 이유: 교재 3-09는 삭제를 GET 링크(`/question/delete/{id}`) + JS `location.href`로 한다. GET은 "조회"이고 CSRF 보호도 받지 않으므로 결정 사항대로 DELETE(14168 42~44강 `global.js`, 013-02의 `_csrf` 메타 사용)
 - 결과: 브라우저에서 304번 "삭제" → `/questions`로 이동, 304번은 404. user1이 user2 글 삭제 → 403. `POST + _method=DELETE`도 DELETE로 처리됨을 테스트로 확인. 43개 통과
+
+### 017-03 수정·삭제, 답변 수정(PUT)
+- 링크: [017-03](https://github.com/haroobuzii/jsb-upgrade/commit/017-03)
+- 작업: `GET·PUT /questions/{questionId}/answers/{id}/modify`, `Answer.isAuthor`·`modify`, `AnswerService.getAnswer(questionId, id)`(다른 질문의 답변이면 404)·`modify`·`checkAuthor`(403), `question/answer/modify.html`, 상세의 답변에 글쓴이 전용 "수정", 테스트 t6·t7
+- 이유: 교재 3-09 답변 수정(`/answer/modify/{id}`, 400). 질문 수정과 같은 방식(PUT, 403). 답변은 질문에 속한 자원이므로 URL에 질문 번호를 넣고, 둘이 맞지 않으면 없는 답변으로 처리(AI 판단)
+- 결과: 브라우저에서 user2가 1번 질문에 단 답변을 수정 → 상세로 돌아와 "(수정됨)". 남의 답변 403, 질문 번호 불일치 404. 테스트 45개 통과

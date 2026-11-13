@@ -1,5 +1,6 @@
 package com.mysite.sbb.domain.question.answer.controller;
 
+import com.mysite.sbb.domain.question.answer.repository.AnswerRepository;
 import com.mysite.sbb.domain.question.question.repository.QuestionRepository;
 import com.mysite.sbb.global.exception.DataNotFoundException;
 import org.junit.jupiter.api.DisplayName;
@@ -25,6 +26,8 @@ class AnswerControllerTest {
     private MockMvcTester mvc;
     @Autowired
     private QuestionRepository questionRepository;
+    @Autowired
+    private AnswerRepository answerRepository;
 
     @Test
     @DisplayName("POST /questions/2/answers : 답변이 생기고 상세로 리다이렉트")
@@ -80,5 +83,30 @@ class AnswerControllerTest {
                 .redirectedUrl().endsWith("/users/login");
 
         assertThat(questionRepository.findById(2).get().getAnswers()).hasSize(before);
+    }
+
+    // 샘플: 질문 2의 답변 1(user1), 답변 2(user2)
+
+    @Test
+    @DisplayName("답변 수정: 글쓴이(user1)는 PUT 으로 수정, 남(user2)은 403")
+    void t6() {
+        assertThat(mvc.get().uri("/questions/2/answers/1/modify").with(user("user1")))
+                .hasStatusOk().hasViewName("question/answer/modify");
+
+        assertThat(mvc.put().uri("/questions/2/answers/1/modify").with(user("user2")).with(csrf()).param("content", "남의 답변 수정"))
+                .hasStatus(HttpStatus.FORBIDDEN);
+
+        assertThat(mvc.put().uri("/questions/2/answers/1/modify").with(user("user1")).with(csrf()).param("content", "수정된 답변"))
+                .hasStatus(HttpStatus.FOUND)
+                .hasRedirectedUrl("/questions/2");
+
+        assertThat(answerRepository.findById(1).get().getContent()).isEqualTo("수정된 답변");
+    }
+
+    @Test
+    @DisplayName("답변 수정: URL 의 질문 번호와 답변의 질문이 다르면 404")
+    void t7() {
+        assertThat(mvc.get().uri("/questions/1/answers/1/modify").with(user("user1")))
+                .hasStatus(HttpStatus.NOT_FOUND);
     }
 }

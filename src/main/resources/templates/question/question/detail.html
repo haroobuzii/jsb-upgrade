@@ -37,6 +37,9 @@
                     <div th:text="${#temporals.format(answer.createDate, 'yyyy-MM-dd HH:mm')}"></div>
                 </div>
             </div>
+            <div class="my-3" sec:authorize="isAuthenticated()" th:if="${answer.isAuthor(#authentication.name)}">
+                <a th:href="@{|/questions/${question.id}/answers/${answer.id}/modify|}" class="btn btn-sm btn-outline-secondary">수정</a>
+            </div>
         </div>
     </div>
 

@@ -1,5 +1,6 @@
 package com.mysite.sbb.domain.question.answer.controller;
 
+import com.mysite.sbb.domain.question.answer.entity.Answer;
 import com.mysite.sbb.domain.question.answer.service.AnswerService;
 import com.mysite.sbb.domain.question.question.service.QuestionService;
 import com.mysite.sbb.domain.user.user.service.UserService;
@@ -10,9 +11,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.security.Principal;
@@ -51,6 +54,39 @@ public class AnswerController {
         answerService.write(questionId, userService.getUser(principal.getName()), form.content());
 
         // 처리 후에는 상세 화면으로 리다이렉트 (새로고침해도 POST 가 다시 전송되지 않는다: PRG 패턴)
+        return "redirect:/questions/" + questionId;
+    }
+
+    // 답변 수정 폼: GET /questions/{questionId}/answers/{id}/modify
+    @GetMapping("/{id}/modify")
+    @PreAuthorize("isAuthenticated()")
+    public String showModify(@PathVariable int questionId, @PathVariable int id, Model model, Principal principal) {
+        Answer answer = answerService.getAnswer(questionId, id);
+        answerService.checkAuthor(answer, principal.getName(), "수정권한이 없습니다.");
+
+        model.addAttribute("answer", answer);
+        model.addAttribute("form", new WriteForm(answer.getContent()));
+        return "question/answer/modify";
+    }
+
+    // 답변 수정 처리: PUT (폼은 POST + _method=PUT)
+    @PutMapping("/{id}/modify")
+    @PreAuthorize("isAuthenticated()")
+    public String modify(
+            @PathVariable int questionId,
+            @PathVariable int id,
+            @ModelAttribute("form") @Valid WriteForm form,
+            BindingResult bindingResult,
+            Model model,
+            Principal principal
+    ) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("answer", answerService.getAnswer(questionId, id));
+            return "question/answer/modify";
+        }
+
+        answerService.modify(questionId, id, principal.getName(), form.content());
+
         return "redirect:/questions/" + questionId;
     }
 }
