@@ -99,7 +99,7 @@
 | 연관관계 | 모든 `@ManyToOne`에 `fetch = LAZY`, `@OneToMany(cascade = {PERSIST, REMOVE}, orphanRemoval = true)`. 컬렉션 필드 이름은 강사 방식 `answers`(교재 `answerList`), `new ArrayList<>()`로 초기화 |
 | 서비스·트랜잭션 | Service 계층 유지, `@Transactional`은 Service에. 답변 생성은 Service 안에서 `question.addAnswer()` |
 | 조회 실패 | 리포지터리 `Optional` 반환 → 서비스에서 `orElseThrow(DataNotFoundException)` → 404 |
-| OSIV | 기본값(켜짐) 유지, 처음 나올 때 설명하고 끈 결과도 한 번 보여줌 |
+| OSIV | 기본값(켜짐) 유지, 처음 나올 때 설명하고 끈 결과도 한 번 보여줌. 실제로 처음 나오는 곳은 016이 아니라 008-01(상세 템플릿에서 LAZY `question.answers` 조회) → 그때 설명·시연 `(AI 판단)` |
 
 ### 샘플 데이터와 테스트
 | 항목 | 결정 |

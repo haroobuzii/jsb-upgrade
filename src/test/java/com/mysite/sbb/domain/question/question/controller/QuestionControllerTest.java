@@ -39,7 +39,8 @@ class QuestionControllerTest {
                 .hasStatusOk()
                 .hasViewName("question/question/detail")
                 .bodyText()
-                .contains("스프링부트 모델 질문입니다.", "id는 자동으로 생성되나요?");
+                .contains("스프링부트 모델 질문입니다.", "id는 자동으로 생성되나요?")
+                .contains("2개의 답변이 있습니다.", "네 자동으로 생성됩니다.", "맞습니다!");
     }
 
     @Test

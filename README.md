@@ -256,3 +256,9 @@ com.mysite.sbb
 - 작업: `@RequestMapping("/questions")`, 목록 `GET /questions`, 상세 `GET /questions/{id}`. 루트 리다이렉트·목록 링크·테스트 URL 변경
 - 이유: 결정 사항(14168 26강) — URL은 자원(복수형 명사)을 나타내고, 하는 일은 HTTP 메서드로 구분한다. `/question/list`, `/question/detail/{id}`의 `list`, `detail`은 "무엇을 하는지"라 URL에 넣을 필요가 없다. 교재·14163은 `/question/list` 유지
 - 결과: `/` → 302 `/questions`, `/questions` 200, `/questions/2` 200, `/questions/999` 404, 옛 주소 `/question/list` 404. 테스트 19개 통과
+
+### 008-01 답변, 시작 상세에 답변 목록과 OSIV
+- 링크: [008-01](https://github.com/haroobuzii/jsb-upgrade/commit/008-01)
+- 작업: 상세 템플릿에 `#lists.size(question.answers)`개의 답변, `th:each`로 답변 내용·작성일시. 컨트롤러 테스트 t2에 답변 확인 추가
+- 이유: 교재 2-12. 이때 템플릿이 LAZY 컬렉션 `question.answers`를 읽는데, 서비스 트랜잭션은 이미 끝난 뒤다. 그래도 동작하는 이유가 OSIV(Open Session In View, 기본 켜짐: 요청이 끝날 때까지 영속성 컨텍스트를 열어 둠)
+- 결과: 답변 2개 표시. `spring.jpa.open-in-view: false`로 잠시 바꾸자 같은 화면이 500(`LazyInitializationException`) → 원래대로 되돌림. 테스트 19개 통과

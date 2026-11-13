@@ -9,5 +9,14 @@
 <h1 th:text="${question.subject}"></h1>
 <div th:text="${question.content}"></div>
 
+<!--/* question.answers 는 LAZY 컬렉션. 서비스의 트랜잭션은 이미 끝났지만 OSIV 덕분에 여기서 조회된다 */-->
+<h5 th:text="|${#lists.size(question.answers)}개의 답변이 있습니다.|"></h5>
+<ul>
+    <li th:each="answer : ${question.answers}">
+        <span th:text="${answer.content}"></span>
+        <small th:text="${answer.createDate}"></small>
+    </li>
+</ul>
+
 </body>
 </html>
