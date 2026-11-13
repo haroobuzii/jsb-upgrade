@@ -40,4 +40,13 @@ public class Question extends BaseEntity {
         this.subject = subject;
         this.content = content;
     }
+
+    // 답변은 질문을 통해서 만든다.
+    // answers 에 넣어 두면 cascade PERSIST 덕분에 질문이 저장(또는 더티체킹)될 때 답변도 INSERT 된다.
+    // 양쪽(answer.question, question.answers)을 한 번에 맞춰 주므로 객체 상태가 어긋나지 않는다.
+    public Answer addAnswer(String content) {
+        Answer answer = new Answer(this, content);
+        answers.add(answer);
+        return answer;
+    }
 }

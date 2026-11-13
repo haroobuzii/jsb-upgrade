@@ -104,7 +104,7 @@
 ### 샘플 데이터와 테스트
 | 항목 | 결정 |
 |---|---|
-| 샘플 데이터 | `global/initData/BaseInitData` (`ApplicationRunner`, `@Lazy self`, 데이터 있으면 건너뜀), dev·test 모두. 3-02의 300건도 여기서 |
+| 샘플 데이터 | `global/initData/BaseInitData` (`ApplicationRunner`, `@Lazy self`, 데이터 있으면 건너뜀), dev·test 모두. 3-02의 300건도 여기서. 004(2-05) 테스트에 데이터가 필요해 005에서 004로 앞당김 `(AI 판단)` |
 | 테스트 | `@SpringBootTest` + `@ActiveProfiles("test")` + 클래스 `@Transactional`(롤백), t1~tN 누적, `@DisplayName`, AssertJ. 화면 기능마다 `MockMvc` 테스트 |
 | 컨트롤러 테스트 | 교재·강사에는 없음 → 이 프로젝트에서 **추가**. `MockMvcTester`(AssertJ 방식)로 리포지터리 테스트와 문법 통일. 기능마다 1~3개(정상 흐름 + 꼭 필요한 실패 흐름: 검증 실패, 403, 404 등). 화면 모양·JS는 테스트하지 않고 브라우저로만 확인. 목적은 브라우저 확인의 대체가 아니라 이후 변경(Security 등)으로부터 기존 기능을 지키는 것 (2026-11-13 결정) |
 

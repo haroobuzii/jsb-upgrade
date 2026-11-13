@@ -143,3 +143,9 @@
 - 작업: `QuestionRepository`, `AnswerRepository`(`JpaRepository<엔티티, Integer>`), `QuestionRepositoryTest` t1(save)
 - 이유: 리포지터리는 인터페이스만 선언하면 Spring Data JPA가 구현체를 만들어 준다(교재 2-05). 테스트는 14163 방식(`@ActiveProfiles("test")`, 클래스 `@Transactional` 롤백, `@DisplayName`, AssertJ)
 - 결과: INSERT SQL과 바인딩 값 로그에서 `create_date`·`modify_date`가 자동으로 채워짐(Auditing) 확인. 저장 전 id 0 → 저장 후 1 이상. 테스트는 메모리 DB를 써서 교재처럼 "서버를 먼저 꺼야 하는(파일 잠금)" 문제가 없음
+
+### 004-02 리포지터리, BaseInitData 샘플 데이터와 addAnswer
+- 링크: [004-02](https://github.com/haroobuzii/jsb-upgrade/commit/004-02)
+- 작업: `global/initData/BaseInitData`(`ApplicationRunner` 빈, `@Lazy self`, `@Transactional work1()`, 데이터가 있으면 건너뜀). 질문 2개 + 2번 질문에 답변 2개. `Question.addAnswer(content)` 추가
+- 이유: 조회·수정·삭제 테스트에는 미리 들어 있는 데이터가 필요하다. 교재는 테스트 안에서 저장하고, 14163은 14강부터 `TestInitData`, 14168은 `BaseInitData`로 앱 시작 시 생성. 로드맵에서는 005였지만 004의 테스트에 필요해서 앞당김(AI 판단). 답변은 `addAnswer()`로 만들어 `save` 없이 cascade PERSIST로 저장(14163 21강)
+- 결과: H2 콘솔에서 질문 2건, 2번 질문의 답변 2건 확인. 로그에 `BaseInitData.work1` 트랜잭션 완료
