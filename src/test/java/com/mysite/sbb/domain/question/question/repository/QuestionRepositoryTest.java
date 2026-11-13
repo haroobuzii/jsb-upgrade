@@ -1,5 +1,6 @@
 package com.mysite.sbb.domain.question.question.repository;
 
+import com.mysite.sbb.domain.question.answer.repository.AnswerRepository;
 import com.mysite.sbb.domain.question.question.entity.Question;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class QuestionRepositoryTest {
     @Autowired
     private QuestionRepository questionRepository;
+    @Autowired
+    private AnswerRepository answerRepository;
 
     @Test
     @DisplayName("save: 저장하면 id가 생기고 작성·수정 일시가 자동으로 채워진다")
@@ -82,5 +85,35 @@ class QuestionRepositoryTest {
 
         assertThat(questions).hasSize(1);
         assertThat(questions.get(0).getSubject()).isEqualTo("sbb가 무엇인가요?");
+    }
+
+    @Test
+    @DisplayName("수정: modify 후 flush 하면 UPDATE, 수정 일시도 갱신된다")
+    void t7() {
+        Question question = questionRepository.findById(1).get();
+        var beforeModifyDate = question.getModifyDate();
+
+        question.modify("수정된 제목", "수정된 내용");
+        // save 를 부르지 않는다. 더티체킹으로 UPDATE 된다.
+        // 원래는 트랜잭션이 끝날 때 반영되지만, 테스트에서 바로 확인하려고 flush 로 지금 반영한다.
+        questionRepository.flush();
+
+        Question found = questionRepository.findBySubject("수정된 제목").get();
+        assertThat(found.getId()).isEqualTo(1);
+        assertThat(found.getModifyDate()).isAfterOrEqualTo(beforeModifyDate); // @LastModifiedDate
+    }
+
+    @Test
+    @DisplayName("삭제: 질문을 지우면 cascade REMOVE 로 답변도 먼저 지워진다")
+    void t8() {
+        assertThat(questionRepository.count()).isEqualTo(2);
+        assertThat(answerRepository.count()).isEqualTo(2);
+
+        Question question = questionRepository.findById(2).get(); // 답변 2개가 달린 질문
+        questionRepository.delete(question);
+        questionRepository.flush();
+
+        assertThat(questionRepository.count()).isEqualTo(1);
+        assertThat(answerRepository.count()).isEqualTo(0);
     }
 }

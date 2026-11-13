@@ -155,3 +155,9 @@
 - 작업: `QuestionRepository`에 `findBySubject`, `findBySubjectAndContent`(둘 다 `Optional`), `findBySubjectLike`. 테스트 t2~t6(findAll, findById, findBySubject, And, Like)
 - 이유: 메서드 이름 규칙(findBy + 필드 + And/Like…)만으로 JPA가 쿼리를 만든다(교재 2-05, 14163 16~17강). 결과가 없을 수 있는 단건 조회는 결정 사항대로 `Optional`
 - 결과: 테스트 로그의 SQL `where q1_0.subject=?`, `where q1_0.subject=? and q1_0.content=?`, `where q1_0.subject like ? escape '\'` 확인. 6개 통과
+
+### 004-04 리포지터리, 수정(더티체킹)과 삭제(cascade REMOVE)
+- 링크: [004-04](https://github.com/haroobuzii/jsb-upgrade/commit/004-04)
+- 작업: `Question.modify(subject, content)` 추가. 테스트 t7(수정: `modify` → `flush` → 조회), t8(답변 2개 달린 질문 삭제 → 답변도 삭제)
+- 이유: setter 대신 의미 있는 메서드로 값을 바꾸고(14168 `Post.modify`), 트랜잭션 안에서는 `save` 없이 더티체킹으로 UPDATE된다. 교재는 `setSubject` 후 `save`. 삭제는 교재처럼 하되 답변이 달린 질문을 지워 `cascade = REMOVE` 동작을 확인
+- 결과: SQL `update question set ..., modify_date=? ... where id=?` (수정 일시 자동 갱신), `delete from answer` 2번 → `delete from question` 순서 확인. 테스트 8개 통과

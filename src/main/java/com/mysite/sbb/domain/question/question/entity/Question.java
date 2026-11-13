@@ -41,6 +41,13 @@ public class Question extends BaseEntity {
         this.content = content;
     }
 
+    // setter 대신 "수정"이라는 의미가 드러나는 메서드로만 값을 바꾼다.
+    // 트랜잭션 안에서 값만 바꾸면 끝날 때 JPA가 변경을 감지(더티체킹)해 UPDATE 한다. save 불필요.
+    public void modify(String subject, String content) {
+        this.subject = subject;
+        this.content = content;
+    }
+
     // 답변은 질문을 통해서 만든다.
     // answers 에 넣어 두면 cascade PERSIST 덕분에 질문이 저장(또는 더티체킹)될 때 답변도 INSERT 된다.
     // 양쪽(answer.question, question.answers)을 한 번에 맞춰 주므로 객체 상태가 어긋나지 않는다.
