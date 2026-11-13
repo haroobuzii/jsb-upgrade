@@ -22,20 +22,20 @@ class QuestionControllerTest {
     private MockMvcTester mvc;
 
     @Test
-    @DisplayName("GET /question/list : 질문 목록 템플릿에 샘플 질문 2개가 보인다")
+    @DisplayName("GET /questions : 질문 목록 템플릿에 샘플 질문 2개가 보인다")
     void t1() {
-        assertThat(mvc.get().uri("/question/list"))
+        assertThat(mvc.get().uri("/questions"))
                 .hasStatusOk()
                 .hasViewName("question/question/list")
                 .bodyText()
                 .contains("sbb가 무엇인가요?", "스프링부트 모델 질문입니다.")
-                .contains("href=\"/question/detail/1\"", "href=\"/question/detail/2\""); // 상세 링크
+                .contains("href=\"/questions/1\"", "href=\"/questions/2\""); // 상세 링크
     }
 
     @Test
-    @DisplayName("GET /question/detail/2 : 질문 제목과 내용이 보인다")
+    @DisplayName("GET /questions/2 : 질문 제목과 내용이 보인다")
     void t2() {
-        assertThat(mvc.get().uri("/question/detail/2"))
+        assertThat(mvc.get().uri("/questions/2"))
                 .hasStatusOk()
                 .hasViewName("question/question/detail")
                 .bodyText()
@@ -43,9 +43,9 @@ class QuestionControllerTest {
     }
 
     @Test
-    @DisplayName("GET /question/detail/999 : 없는 질문이면 404")
+    @DisplayName("GET /questions/999 : 없는 질문이면 404")
     void t3() {
-        assertThat(mvc.get().uri("/question/detail/999"))
+        assertThat(mvc.get().uri("/questions/999"))
                 .hasStatus(HttpStatus.NOT_FOUND)
                 .hasFailed()
                 .failure()

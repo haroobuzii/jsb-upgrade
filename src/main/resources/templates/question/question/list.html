@@ -23,7 +23,7 @@
         <td th:text="${question.id}"></td>
         <td>
             <!--/* @{...}: URL 을 만든다(컨텍스트 경로 자동 포함). |...|: 문자열 안에 ${...} 값을 끼워 넣는다 */-->
-            <a th:href="@{|/question/detail/${question.id}|}" th:text="${question.subject}"></a>
+            <a th:href="@{|/questions/${question.id}|}" th:text="${question.subject}"></a>
         </td>
         <td th:text="${question.createDate}"></td>
     </tr>

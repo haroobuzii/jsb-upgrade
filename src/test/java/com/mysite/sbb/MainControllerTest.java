@@ -34,6 +34,6 @@ class MainControllerTest {
     void t2() {
         assertThat(mvc.get().uri("/"))
                 .hasStatus(HttpStatus.FOUND)
-                .hasRedirectedUrl("/question/list");
+                .hasRedirectedUrl("/questions");
     }
 }

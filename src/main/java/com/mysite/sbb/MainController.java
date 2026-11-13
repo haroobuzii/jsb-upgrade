@@ -17,6 +17,6 @@ public class MainController {
     // "redirect:주소" → 302 응답 + Location 헤더 → 브라우저가 그 주소로 다시 요청
     @GetMapping("/")
     public String root() {
-        return "redirect:/question/list";
+        return "redirect:/questions";
     }
 }

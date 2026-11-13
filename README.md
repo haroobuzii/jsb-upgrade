@@ -250,3 +250,9 @@ com.mysite.sbb
 - 작업: `QuestionController`에 `@RequestMapping("/question")`, 메서드는 `@GetMapping("/list")`, `@GetMapping("/detail/{id}")`
 - 이유: 교재 2-11 — 한 컨트롤러의 URL이 모두 `/question`으로 시작하므로 클래스에 한 번만 적는다. URL은 그대로
 - 결과: `/question/list`, `/question/detail/2` 모두 200, 테스트 19개 그대로 통과(URL이 바뀌지 않았다는 증거)
+
+### 007-05 상세, 완료 복수형 URL로 전환
+- 링크: [007-05](https://github.com/haroobuzii/jsb-upgrade/commit/007-05)
+- 작업: `@RequestMapping("/questions")`, 목록 `GET /questions`, 상세 `GET /questions/{id}`. 루트 리다이렉트·목록 링크·테스트 URL 변경
+- 이유: 결정 사항(14168 26강) — URL은 자원(복수형 명사)을 나타내고, 하는 일은 HTTP 메서드로 구분한다. `/question/list`, `/question/detail/{id}`의 `list`, `detail`은 "무엇을 하는지"라 URL에 넣을 필요가 없다. 교재·14163은 `/question/list` 유지
+- 결과: `/` → 302 `/questions`, `/questions` 200, `/questions/2` 200, `/questions/999` 404, 옛 주소 `/question/list` 404. 테스트 19개 통과
