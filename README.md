@@ -376,3 +376,9 @@ com.mysite.sbb
 - 작업: `SecurityConfig`에 `PasswordEncoder`(BCrypt) 빈, `UserService.join(username, password, email)`(중복 아이디·이메일 사전 확인 → `ServiceException(field, message)`, 비밀번호 암호화 후 저장), `global/exception/ServiceException`, `UserServiceTest` t1·t2
 - 이유: 교재 3-06 — 비밀번호는 평문이 아니라 BCrypt 해시로 저장. 교재는 저장 시 `DataIntegrityViolationException`을 잡아 "이미 등록된 사용자입니다." 하나로 알려 준다. 저장 전에 확인하면 아이디와 이메일 중 무엇이 겹쳤는지 칸별로 알려 줄 수 있다(AI 판단, unique 제약은 그대로 최종 방어선)
 - 결과: 저장된 비밀번호가 `$2a$...` 해시이고 `matches`로만 확인 가능. 중복 시 `field`가 `username`/`email`. 테스트 29개 통과
+
+### 014-03 회원가입, 완료 가입 폼과 컨트롤러
+- 링크: [014-03](https://github.com/haroobuzii/jsb-upgrade/commit/014-03)
+- 작업: `UserController`(`GET/POST /users/signup`, `record SignupForm`: 아이디 3~25자, 비밀번호·확인, 이메일 형식), 비밀번호 일치 확인(`rejectValue("password2", ...)`), `ServiceException` → 해당 칸 오류, `user/user/signup.html`, 내비게이션 바에 "회원가입", `UserControllerTest` t1~t3
+- 이유: 교재 3-06. URL은 질문과 같이 복수형 `/users/signup`(교재 `/user/signup`, AI 판단). 폼은 010과 같은 14168 방식(record, `@ModelAttribute("form")`, 정렬·포커스되는 오류)
+- 결과: 브라우저에서 잘못된 이메일 → "이메일 형식이 올바르지 않습니다."(비밀번호 칸은 다시 채워지지 않음). 테스트: 가입 성공 302 `/`, 비밀번호 불일치·중복 아이디는 폼으로. 32개 통과
