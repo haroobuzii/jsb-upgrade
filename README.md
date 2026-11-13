@@ -346,3 +346,9 @@ com.mysite.sbb
 - 작업: 목록 제목 옆에 답변이 있으면 `#lists.size(question.answers)`를 빨간 글씨로. 목록 테스트에 개수 확인 추가
 - 이유: 교재 3-04. 다만 `question.answers`는 LAZY라 질문마다 답변 조회 SQL이 따로 나간다
 - 결과: 1·2번 질문 옆에 1, 2 표시. 그런데 한 페이지(질문 10개)를 그리는 데 SQL 12번 = 목록 1 + 개수 1 + **답변 10번**(`where a1_0.question_id=?`) → N+1 문제. 다음 커밋에서 해결. 테스트 26개 통과
+
+### 012-05 페이징, 완료 N+1 해결 (default_batch_fetch_size)
+- 링크: [012-05](https://github.com/haroobuzii/jsb-upgrade/commit/012-05)
+- 작업: `spring.jpa.properties.hibernate.default_batch_fetch_size: 100`
+- 이유: 012-04의 N+1(질문마다 답변 조회). 이 설정은 LAZY 컬렉션 하나를 꺼낼 때 같은 영속성 컨텍스트의 다른 질문들 것도 `IN (...)`으로 한 번에 가져온다. 코드 변경 없이 설정 한 줄, 화면 결과는 같음
+- 결과: 목록 0페이지 SQL 12번 → 3번(목록 + count + `a1_0.question_id in (?, ...)` 1번). 테스트 26개 통과
