@@ -412,3 +412,9 @@ com.mysite.sbb
 - 작업: 상세의 답변 폼 — 비로그인은 비활성화된 입력칸(“로그인 후 답변을 작성할 수 있습니다.”)과 "로그인하고 답변하기" 링크, 로그인하면 입력칸과 "답변등록". 테스트 t8
 - 이유: 교재 3-08은 비로그인에게 `disabled` 입력칸을 보여 준다. 눌러 봐야 로그인 화면으로 튕기는 버튼 대신 로그인 링크를 보여 줌(AI 판단). 목록의 글쓴이(LAZY 프록시)도 012-05 batch fetch로 묶이는지 확인
 - 결과: 비로그인 HTML에 `disabled` 입력칸과 로그인 링크. 목록 0페이지 SQL 4번(목록, count, 답변 IN, `site_user` IN) — 글쓴이 10명을 따로 조회하지 않음. 테스트 39개 통과
+
+### 017-01 수정·삭제, 시작 질문 수정(PUT, 403)
+- 링크: [017-01](https://github.com/haroobuzii/jsb-upgrade/commit/017-01)
+- 작업: `spring.mvc.hiddenmethod.filter.enabled: true`, `GET /questions/{id}/modify`(기존 값 채운 폼), `PUT /questions/{id}/modify`(폼은 `th:method="put"` → POST + hidden `_method=put`), `Question.isAuthor`, `QuestionService.modify`·`checkAuthor`(글쓴이가 아니면 **403**), 상세에 글쓴이 전용 "수정" 버튼, 테스트 t9·t10
+- 이유: 교재 3-09는 `POST /question/modify/{id}`, 권한 오류 400. 결정 사항대로 HTTP 메서드로 의미를 드러내고(14168 41강 `_method`), 권한 없음은 403 Forbidden
+- 결과: 브라우저에서 user2가 304번 질문 제목 수정 → 상세로 이동, 제목 변경. user1이 user2 글 수정 시도 → 403. 테스트 41개 통과

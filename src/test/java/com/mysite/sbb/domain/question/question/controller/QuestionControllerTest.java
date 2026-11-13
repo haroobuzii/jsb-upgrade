@@ -120,4 +120,32 @@ class QuestionControllerTest {
         assertThat(mvc.get().uri("/questions/2").with(user("user1")))
                 .bodyText().contains("답변등록").doesNotContain("로그인하고 답변하기");
     }
+
+    @Test
+    @DisplayName("질문 수정: 글쓴이(user2)는 PUT 으로 수정 가능")
+    void t9() {
+        assertThat(mvc.get().uri("/questions/2/modify").with(user("user2")))
+                .hasStatusOk()
+                .bodyText().contains("name=\"_method\" value=\"put\"", "스프링부트 모델 질문입니다.");
+
+        assertThat(mvc.put().uri("/questions/2/modify").with(user("user2")).with(csrf())
+                .param("subject", "수정된 제목").param("content", "수정된 내용"))
+                .hasStatus(HttpStatus.FOUND)
+                .hasRedirectedUrl("/questions/2");
+
+        assertThat(questionRepository.findById(2).get().getSubject()).isEqualTo("수정된 제목");
+    }
+
+    @Test
+    @DisplayName("질문 수정: 글쓴이가 아니면(user1) 403")
+    void t10() {
+        assertThat(mvc.get().uri("/questions/2/modify").with(user("user1")))
+                .hasStatus(HttpStatus.FORBIDDEN);
+
+        assertThat(mvc.put().uri("/questions/2/modify").with(user("user1")).with(csrf())
+                .param("subject", "남의 글 수정").param("content", "내용"))
+                .hasStatus(HttpStatus.FORBIDDEN);
+
+        assertThat(questionRepository.findById(2).get().getSubject()).isEqualTo("스프링부트 모델 질문입니다.");
+    }
 }

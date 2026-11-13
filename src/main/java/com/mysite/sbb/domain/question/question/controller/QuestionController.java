@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -90,5 +91,37 @@ public class QuestionController {
         Question question = questionService.write(userService.getUser(principal.getName()), form.subject(), form.content());
 
         return "redirect:/questions/" + question.getId();
+    }
+
+    // 수정 폼: 기존 값을 채운 폼을 보여 준다. 글쓴이가 아니면 403
+    @GetMapping("/{id}/modify")
+    @PreAuthorize("isAuthenticated()")
+    public String showModify(@PathVariable int id, Model model, Principal principal) {
+        Question question = questionService.getQuestion(id);
+        questionService.checkAuthor(question, principal.getName(), "수정권한이 없습니다.");
+
+        model.addAttribute("question", question);
+        model.addAttribute("form", new WriteForm(question.getSubject(), question.getContent()));
+        return "question/question/modify";
+    }
+
+    // 수정 처리: PUT /questions/{id}/modify (폼은 POST + _method=PUT)
+    @PutMapping("/{id}/modify")
+    @PreAuthorize("isAuthenticated()")
+    public String modify(
+            @PathVariable int id,
+            @ModelAttribute("form") @Valid WriteForm form,
+            BindingResult bindingResult,
+            Model model,
+            Principal principal
+    ) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("question", questionService.getQuestion(id));
+            return "question/question/modify";
+        }
+
+        questionService.modify(id, principal.getName(), form.subject(), form.content());
+
+        return "redirect:/questions/" + id;
     }
 }

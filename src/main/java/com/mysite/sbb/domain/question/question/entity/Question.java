@@ -49,6 +49,11 @@ public class Question extends BaseEntity {
         this.content = content;
     }
 
+    // 글쓴이인지 확인 (수정·삭제 권한). 016 이전 글처럼 글쓴이가 없으면 아무도 수정할 수 없다
+    public boolean isAuthor(String username) {
+        return author != null && author.getUsername().equals(username);
+    }
+
     // setter 대신 "수정"이라는 의미가 드러나는 메서드로만 값을 바꾼다.
     // 트랜잭션 안에서 값만 바꾸면 끝날 때 JPA가 변경을 감지(더티체킹)해 UPDATE 한다. save 불필요.
     public void modify(String subject, String content) {

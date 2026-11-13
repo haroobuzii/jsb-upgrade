@@ -1,0 +1,44 @@
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <title>질문 수정</title>
+</head>
+<div layout:fragment="content" class="container">
+    <h5 class="my-3 border-bottom pb-2">질문 수정</h5>
+    <!--/* th:method="put": 실제로는 method="post" + <input type="hidden" name="_method" value="put"> 를 만들어 준다
+         → HiddenHttpMethodFilter 가 PUT 으로 바꿔 @PutMapping 이 받는다 */-->
+    <form th:action th:method="put" th:object="${form}" onsubmit="Question__submitWriteForm(this); return false;">
+        <div th:replace="~{form_errors :: formErrorsFragment}"></div>
+        <div class="mb-3">
+            <label for="subject" class="form-label">제목</label>
+            <input type="text" th:field="*{subject}" class="form-control" autofocus>
+        </div>
+        <div class="mb-3">
+            <label for="content" class="form-label">내용</label>
+            <textarea th:field="*{content}" class="form-control" rows="10"></textarea>
+        </div>
+        <input type="submit" value="저장하기" class="btn btn-primary my-2">
+    </form>
+
+    <script>
+        // 클라이언트 검증: 빠른 피드백용. 진짜 방어선은 서버 검증(@Valid)이다 (14168 35~36강)
+        function Question__submitWriteForm(form) {
+            form.subject.value = form.subject.value.trim();
+            form.content.value = form.content.value.trim();
+
+            if (form.subject.value.length === 0) {
+                alert("제목을 입력해주세요.");
+                form.subject.focus();
+                return;
+            }
+
+            if (form.content.value.length === 0) {
+                alert("내용을 입력해주세요.");
+                form.content.focus();
+                return;
+            }
+
+            form.submit();
+        }
+    </script>
+</div>
+</html>

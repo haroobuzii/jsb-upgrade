@@ -5,12 +5,14 @@ import com.mysite.sbb.domain.question.question.repository.QuestionRepository;
 import com.mysite.sbb.domain.user.user.entity.SiteUser;
 import com.mysite.sbb.global.exception.DataNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 
 // 컨트롤러와 리포지터리 사이에서 실제 일(비즈니스 로직)을 처리한다.
@@ -40,5 +42,19 @@ public class QuestionService {
     @Transactional
     public Question write(SiteUser author, String subject, String content) {
         return questionRepository.save(new Question(author, subject, content));
+    }
+
+    // 수정: 글쓴이만. 아니면 403. 값만 바꾸면 트랜잭션 끝에 더티체킹으로 UPDATE (modifyDate 는 Auditing 이 갱신)
+    @Transactional
+    public Question modify(int id, String username, String subject, String content) {
+        Question question = getQuestion(id);
+        checkAuthor(question, username, "수정권한이 없습니다.");
+        question.modify(subject, content);
+        return question;
+    }
+
+    // 권한 오류는 400(교재)이 아니라 403 Forbidden (결정 사항)
+    public void checkAuthor(Question question, String username, String message) {
+        if (!question.isAuthor(username)) throw new ResponseStatusException(HttpStatus.FORBIDDEN, message);
     }
 }

@@ -6,6 +6,11 @@ spring:
   output:
     ansi:
       enabled: always
+  mvc:
+    # HTML 폼은 GET/POST 만 보낼 수 있다. hidden 필드 _method=PUT/DELETE 를 보고 그 메서드로 바꿔 준다 (14168 41강)
+    hiddenmethod:
+      filter:
+        enabled: true
   datasource:
     hikari:
       auto-commit: false
