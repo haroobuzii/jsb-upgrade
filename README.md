@@ -274,3 +274,9 @@ com.mysite.sbb
 - 작업: `static/resource/style.css`(textarea 너비 100%, 제출 버튼 위 여백), 상세 화면에 `<link th:href="@{/resource/style.css}">`
 - 이유: 교재 2-13 — CSS 같은 정적 파일은 `static` 폴더에 두면 그 안의 경로가 그대로 URL이 된다. 결정 사항대로 정적 파일은 `/resource/**` 아래에 모음(14168 `static/resource/`, 나중에 Security에서 한 줄로 허용하기 쉬움)
 - 결과: `/resource/style.css` 200 `text/css`, 답변 입력칸이 화면 너비로 넓어짐. 정적 파일은 classpath에서 제공되므로 템플릿과 달리 재빌드 후 반영. 테스트 21개 통과
+
+### 009-02 디자인, 부트스트랩(cdnjs)과 Pretendard
+- 링크: [009-02](https://github.com/haroobuzii/jsb-upgrade/commit/009-02)
+- 작업: 목록·상세에 cdnjs Bootstrap 5.3.8 링크와 교재 2-14의 클래스(`table`, `card`, `badge`, `form-control`, `btn` 등), `loop.count` 순번, `#temporals.format(..., 'yyyy-MM-dd HH:mm')`. `style.css`에 Pretendard 글꼴(400~700)
+- 이유: 교재는 bootstrap.min.css 파일을 내려받아 static에 넣는다. 14163 39강은 cdnjs 주소로 바로 쓰고 Pretendard 글꼴을 입힌다(결정 사항). 날짜는 `2026-11-13T14:27:33.80...` 대신 읽기 쉬운 형식으로
+- 결과: 브라우저에서 목록은 어두운 머리글의 표, 상세는 카드 형태로 표시. 테스트 21개 통과
