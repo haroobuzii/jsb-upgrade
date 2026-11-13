@@ -161,3 +161,9 @@
 - 작업: `Question.modify(subject, content)` 추가. 테스트 t7(수정: `modify` → `flush` → 조회), t8(답변 2개 달린 질문 삭제 → 답변도 삭제)
 - 이유: setter 대신 의미 있는 메서드로 값을 바꾸고(14168 `Post.modify`), 트랜잭션 안에서는 `save` 없이 더티체킹으로 UPDATE된다. 교재는 `setSubject` 후 `save`. 삭제는 교재처럼 하되 답변이 달린 질문을 지워 `cascade = REMOVE` 동작을 확인
 - 결과: SQL `update question set ..., modify_date=? ... where id=?` (수정 일시 자동 갱신), `delete from answer` 2번 → `delete from question` 순서 확인. 테스트 8개 통과
+
+### 004-05 리포지터리, 완료 답변 테스트와 LAZY
+- 링크: [004-05](https://github.com/haroobuzii/jsb-upgrade/commit/004-05)
+- 작업: `AnswerRepositoryTest` t1(addAnswer + flush로 INSERT), t2(`answer.getQuestion()`은 LAZY 프록시, 쓰는 순간 SELECT), t3(`question.getAnswers()`), t4(orphanRemoval), t5(트랜잭션 없이 LAZY 컬렉션 접근 → `LazyInitializationException`)
+- 이유: 교재 2-05는 답변 저장·조회 후 "세션이 종료되어 오류"를 겪고 `@Transactional`로 해결한다. 그 오류를 테스트로 재현해 왜 트랜잭션이 필요한지 남김(14163 25강). LAZY의 실제 동작(프록시 → 사용 시 조회)을 `Hibernate.isInitialized`로 확인(14163 22~24강)
+- 결과: 5개 통과, 전체 15개 통과
