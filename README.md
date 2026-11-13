@@ -89,7 +89,14 @@
 - 결과: `/sbb` 응답이 500 → 200, `Content-Type: text/plain;charset=UTF-8`, 브라우저에 환영 문자열 출력
 
 ### 001-03 hello 컨트롤러, 완료 MockMvc 테스트
-- 링크: (다음 커밋에서 추가)
+- 링크: [047627c](https://github.com/haroobuzii/jsb-upgrade/commit/047627c)
 - 작업: `MainControllerTest` 추가. `@SpringBootTest` + `@AutoConfigureMockMvc` + `MockMvcTester`(AssertJ 방식)로 `GET /sbb`의 상태·Content-Type·본문 검증
 - 이유: 브라우저로 눈으로 확인한 동작을 테스트 코드로 고정해, 이후 변경으로 깨지면 바로 알 수 있게 하기 위함. 결정 사항(테스트는 AssertJ)에 맞춰 예전 `perform().andExpect()` 대신 `MockMvcTester` 사용
 - 결과: `./gradlew test` 2개 통과. 기대 문자열을 일부러 틀리게 바꾸면 `expected / but was` 메시지로 실패하는 것도 확인 후 원복
+- 정정(002-01에서 추가): 커밋 메시지의 "교재·강사 방식은 `perform().andExpect()`"라는 설명은 틀림. 교재·강사에는 컨트롤러(MockMvc) 테스트가 없음. 이 테스트는 교재·강사에 없는 것을 `docs/analysis.md` 결정 사항에 따라 **추가**한 것
+
+### 002-01 JPA·H2, 시작 application.yaml로 전환
+- 링크: (다음 커밋에서 추가)
+- 작업: `application.properties` → `application.yaml` (내용은 `spring.application.name: sbb` 그대로), `docs/analysis.md`에 컨트롤러 테스트 결정 추가, 001-03 정정 메모
+- 이유: 다음 커밋부터 dev/test 프로파일, JPA, 로그 설정이 늘어난다. yaml은 들여쓰기로 계층을 표현해 `spring.jpa.properties.hibernate...` 같은 긴 키의 반복이 없어 읽기 쉬움 (14163·14168 모두 yaml 사용)
+- 결과: 앱 재시작 로그에 `[sbb]`(앱 이름) 그대로 출력 → yaml을 읽음, `/sbb` 200, `./gradlew test` 통과
