@@ -7,7 +7,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -38,5 +40,20 @@ public class QuestionController {
         model.addAttribute("question", question);
 
         return "question/question/detail";
+    }
+
+    // 같은 URL 이라도 HTTP 메서드로 구분한다 (14168 26강)
+    // GET /questions/write : 등록 폼 보여 주기
+    @GetMapping("/write")
+    public String showWrite() {
+        return "question/question/write";
+    }
+
+    // POST /questions/write : 등록 처리
+    @PostMapping("/write")
+    public String write(@RequestParam String subject, @RequestParam String content) {
+        Question question = questionService.write(subject, content);
+
+        return "redirect:/questions/" + question.getId();
     }
 }

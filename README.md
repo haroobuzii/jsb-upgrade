@@ -286,3 +286,9 @@ com.mysite.sbb
 - 작업: `thymeleaf-layout-dialect` 추가, `templates/layout.html`(공통 `<head>`, 부트스트랩·style.css, `layout:title-pattern="$CONTENT_TITLE | $LAYOUT_TITLE"`, `layout:fragment="content"` 자리). 목록·상세는 `layout:decorate="~{layout}"` + 자기 `<title>`과 content 조각만
 - 이유: 교재 2-15 — 모든 페이지가 같은 `<html><head>`를 반복하지 않고 틀(layout) 하나를 공유. 14168 45강처럼 `title-pattern`으로 페이지마다 다른 제목 + 사이트 이름
 - 결과: 탭 제목 `질문 목록 | SBB`, `스프링부트 모델 질문입니다. | SBB`. 화면은 009-02와 동일. 테스트에 `<title>` 확인 추가, 21개 통과
+
+### 010-01 질문 등록, 시작 등록 폼과 처리
+- 링크: [010-01](https://github.com/haroobuzii/jsb-upgrade/commit/010-01)
+- 작업: `GET /questions/write`(폼), `POST /questions/write`(`@RequestParam subject, content` → `QuestionService.write` → 새 질문 상세로 리다이렉트), `write.html`, 목록에 "질문 등록하기" 버튼, 테스트 t4·t5
+- 이유: 교재 2-16. URL은 결정 사항대로 같은 `/questions/write`를 GET(폼)·POST(처리)로 구분(교재 `/question/create`, 14168 26강). 폼의 `th:action`을 비워 현재 주소로 전송. 등록 후에는 목록 대신 새 질문 상세로(14168 방식, AI 판단). 이 단계는 아직 검증이 없다
+- 결과: 브라우저에서 질문 등록 → `/questions/3` 상세로 이동. 테스트 23개 통과

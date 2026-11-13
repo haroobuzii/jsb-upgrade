@@ -1,5 +1,6 @@
 package com.mysite.sbb.domain.question.question.controller;
 
+import com.mysite.sbb.domain.question.question.repository.QuestionRepository;
 import com.mysite.sbb.global.exception.DataNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class QuestionControllerTest {
     @Autowired
     private MockMvcTester mvc;
+    @Autowired
+    private QuestionRepository questionRepository;
 
     @Test
     @DisplayName("GET /questions : 질문 목록 템플릿에 샘플 질문 2개가 보인다")
@@ -53,5 +56,26 @@ class QuestionControllerTest {
                 .failure()
                 .isInstanceOf(DataNotFoundException.class)
                 .hasMessage("question not found");
+    }
+
+    @Test
+    @DisplayName("GET /questions/write : 질문 등록 폼")
+    void t4() {
+        assertThat(mvc.get().uri("/questions/write"))
+                .hasStatusOk()
+                .hasViewName("question/question/write");
+    }
+
+    @Test
+    @DisplayName("POST /questions/write : 질문이 저장되고 새 질문 상세로 리다이렉트")
+    void t5() {
+        assertThat(mvc.post().uri("/questions/write")
+                .param("subject", "새 질문")
+                .param("content", "새 질문 내용"))
+                .hasStatus(HttpStatus.FOUND)
+                .redirectedUrl()
+                .startsWith("/questions/");
+
+        assertThat(questionRepository.findBySubject("새 질문")).isPresent();
     }
 }
