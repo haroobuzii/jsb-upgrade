@@ -436,3 +436,9 @@ com.mysite.sbb
 - 작업: `DELETE /questions/{questionId}/answers/{id}`, `AnswerService.delete`(글쓴이만, 403) → `Question.deleteAnswer(answer)`(목록에서 제거 → orphanRemoval로 DELETE), 상세의 답변에 글쓴이 전용 "삭제", 테스트 t8
 - 이유: 교재는 `answerRepository.delete(answer)`. 결정 사항대로 질문을 통해 삭제(14168 `Post.deleteComment`). 같은 트랜잭션에서 꺼낸 답변은 목록 안의 객체와 같은 인스턴스라 `equals` 없이도 `remove`가 된다 → `equals/hashCode`는 아직 필요 없음
 - 결과: 브라우저에서 user2 답변 삭제 → "2개의 답변", 로그 `AnswerService.delete` 트랜잭션 + `delete` SQL. 남의 답변 403. 테스트에서는 한 트랜잭션이라 `flush()` 후 확인. 46개 통과
+
+### 017-05 수정·삭제, 완료 수정 일시 표시
+- 링크: [017-05](https://github.com/haroobuzii/jsb-upgrade/commit/017-05)
+- 작업: `BaseEntity.isModified()`(수정 일시가 작성 일시와 다르면 true), 상세의 질문·답변에 수정된 경우만 "modified at" 배지, 리포지터리 테스트에 `isModified` 확인
+- 이유: 교재 3-09는 이때 `modifyDate` 필드를 추가하고 null이 아니면 보여 준다. 우리는 003부터 Auditing이 처음 저장 때도 `modifyDate`를 채우므로(작성 일시와 같은 값) "같지 않음"으로 수정 여부를 판단
+- 결과: 브라우저에서 user2가 305번 질문을 만들고 수정 → "modified at"과 작성 일시 두 배지. 수정 안 한 1번 질문은 배지 없음. 테스트 46개 통과

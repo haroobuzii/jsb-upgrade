@@ -30,4 +30,9 @@ public abstract class BaseEntity {
 
     @LastModifiedDate
     private LocalDateTime modifyDate;
+
+    // 처음 저장할 때는 Auditing 이 작성·수정 일시를 같은 값으로 넣는다. 다르면 한 번 이상 수정된 것
+    public boolean isModified() {
+        return modifyDate != null && !modifyDate.equals(createDate);
+    }
 }

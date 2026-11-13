@@ -34,6 +34,7 @@ class QuestionRepositoryTest {
         assertThat(q1.getId()).isGreaterThan(0);      // INSERT 후 DB가 만든 id
         assertThat(q1.getCreateDate()).isNotNull(); // @CreatedDate (JPA Auditing)
         assertThat(q1.getModifyDate()).isNotNull(); // @LastModifiedDate
+        assertThat(q1.isModified()).isFalse();       // 처음 저장: 작성 일시 == 수정 일시
     }
 
     // 아래 테스트들은 BaseInitData 가 만든 샘플 데이터를 사용한다.
@@ -101,6 +102,7 @@ class QuestionRepositoryTest {
         Question found = questionRepository.findBySubject("수정된 제목").get();
         assertThat(found.getId()).isEqualTo(1);
         assertThat(found.getModifyDate()).isAfterOrEqualTo(beforeModifyDate); // @LastModifiedDate
+        assertThat(found.isModified()).isTrue();                              // 작성 일시와 달라짐
     }
 
     @Test
