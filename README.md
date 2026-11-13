@@ -298,3 +298,9 @@ com.mysite.sbb
 - 작업: `spring-boot-starter-validation`, 컨트롤러 안 `record WriteForm(@NotBlank @Size subject, @NotBlank content)`, `@ModelAttribute("form") @Valid` + `BindingResult`, `th:object`/`th:field`, `form_errors.html` 조각(메시지 `01-subject-...` 정렬·분리, 첫 오류 필드 포커스), 테스트 t6
 - 이유: 교재 2-16의 `QuestionForm`(@Getter @Setter 클래스)·`form_errors` 대신 14168 방식(record 폼, `@ModelAttribute("form")`, 정렬·포커스되는 오류 조각). 빈 제목·내용은 저장하지 않는다
 - 결과: 빈 폼 제출 → "제목을 입력해주세요." "내용을 입력해주세요." 순서대로 표시, 입력값 유지. 제목만 입력 → 내용 칸에 포커스. 포커스 스크립트가 처음엔 아래쪽 입력칸이 아직 없을 때 실행돼 `undefined.focus()` 오류 → `DOMContentLoaded` 뒤로 미뤄 해결. 테스트 24개 통과
+
+### 010-03 질문 등록, 답변 폼 검증
+- 링크: [010-03](https://github.com/haroobuzii/jsb-upgrade/commit/010-03)
+- 작업: `AnswerController` 안 `record WriteForm(@NotBlank content)`, `@ModelAttribute("form") @Valid` + `BindingResult`, 실패 시 질문을 다시 담아 상세 화면 반환. 상세 GET에 빈 답변 폼(`form`), 상세의 답변 폼에 `th:object`·`th:field`·오류 조각. 테스트 t3
+- 이유: 교재 2-16의 `AnswerForm`과 같은 목적(빈 답변 저장 방지)을 질문 폼과 같은 방식으로
+- 결과: 공백 답변 POST → 200 상세 화면 + "내용을 입력해주세요.", 답변 수 그대로. 테스트 25개 통과

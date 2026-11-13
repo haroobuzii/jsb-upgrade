@@ -44,4 +44,18 @@ class AnswerControllerTest {
                 .failure()
                 .isInstanceOf(DataNotFoundException.class);
     }
+
+    @Test
+    @DisplayName("POST /questions/2/answers : 내용이 비면 저장하지 않고 상세 화면에 오류 메시지")
+    void t3() {
+        int before = questionRepository.findById(2).get().getAnswers().size();
+
+        assertThat(mvc.post().uri("/questions/2/answers").param("content", "  "))
+                .hasStatusOk()
+                .hasViewName("question/question/detail")
+                .bodyText()
+                .contains("내용을 입력해주세요.");
+
+        assertThat(questionRepository.findById(2).get().getAnswers()).hasSize(before);
+    }
 }

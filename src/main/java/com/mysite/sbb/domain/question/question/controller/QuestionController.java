@@ -1,5 +1,6 @@
 package com.mysite.sbb.domain.question.question.controller;
 
+import com.mysite.sbb.domain.question.answer.controller.AnswerController;
 import com.mysite.sbb.domain.question.question.entity.Question;
 import com.mysite.sbb.domain.question.question.service.QuestionService;
 import jakarta.validation.Valid;
@@ -38,8 +39,13 @@ public class QuestionController {
     }
 
     // {id}: URL 경로의 일부를 변수로 받는다. /questions/2 → id = 2
+    // 상세 화면에는 답변 등록 폼이 있으므로 빈 답변 폼(form)도 함께 넘긴다
     @GetMapping("/{id}")
-    public String detail(@PathVariable int id, Model model) {
+    public String detail(
+            @PathVariable int id,
+            @ModelAttribute("form") AnswerController.WriteForm form,
+            Model model
+    ) {
         Question question = questionService.getQuestion(id);
         model.addAttribute("question", question);
 
