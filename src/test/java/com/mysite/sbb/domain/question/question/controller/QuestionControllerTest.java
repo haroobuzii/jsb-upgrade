@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -71,7 +72,7 @@ class QuestionControllerTest {
     @Test
     @DisplayName("POST /questions/write : 질문이 저장되고 새 질문 상세로 리다이렉트")
     void t5() {
-        assertThat(mvc.post().uri("/questions/write")
+        assertThat(mvc.post().uri("/questions/write").with(csrf())
                 .param("subject", "새 질문")
                 .param("content", "새 질문 내용"))
                 .hasStatus(HttpStatus.FOUND)
@@ -86,7 +87,7 @@ class QuestionControllerTest {
     void t6() {
         long before = questionRepository.count();
 
-        assertThat(mvc.post().uri("/questions/write")
+        assertThat(mvc.post().uri("/questions/write").with(csrf())
                 .param("subject", " ")
                 .param("content", ""))
                 .hasStatusOk()

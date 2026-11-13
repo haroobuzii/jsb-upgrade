@@ -352,3 +352,9 @@ com.mysite.sbb
 - 작업: `spring.jpa.properties.hibernate.default_batch_fetch_size: 100`
 - 이유: 012-04의 N+1(질문마다 답변 조회). 이 설정은 LAZY 컬렉션 하나를 꺼낼 때 같은 영속성 컨텍스트의 다른 질문들 것도 `IN (...)`으로 한 번에 가져온다. 코드 변경 없이 설정 한 줄, 화면 결과는 같음
 - 결과: 목록 0페이지 SQL 12번 → 3번(목록 + count + `a1_0.question_id in (?, ...)` 1번). 테스트 26개 통과
+
+### 013-01 시큐리티, 시작 Spring Security 도입
+- 링크: [013-01](https://github.com/haroobuzii/jsb-upgrade/commit/013-01)
+- 작업: `spring-boot-starter-security`(+ `-security-test`), `global/security/SecurityConfig`(`SecurityFilterChain`: `/resource/**`·`/h2-console/**`·`/**` 허용, H2용 frame `sameOrigin`, H2 경로만 CSRF 제외). POST 테스트에 `.with(csrf())`
+- 이유: 교재 3-05. 의존성만 넣으면 모든 요청이 로그인 페이지로 막힌다(14168 46강 "디폴트 세팅"). 교재의 `new AntPathRequestMatcher(...)`는 Security 7에서 제거돼 문자열 패턴 사용(14168 방식)
+- 결과: 의존성만 넣었을 때 `/questions` → 브라우저 `/login`(Please sign in), curl 401, 로그에 임시 비밀번호. 설정 후 `/questions`·`/resource/style.css`·`/h2-console/` 200, `X-Frame-Options: SAMEORIGIN`. 토큰 없는 POST는 403, 브라우저 폼은 `th:action`이 넣은 `_csrf`로 정상 등록. 테스트 26개 통과

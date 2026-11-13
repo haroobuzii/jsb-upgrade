@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -27,7 +28,7 @@ class AnswerControllerTest {
     @Test
     @DisplayName("POST /questions/2/answers : 답변이 생기고 상세로 리다이렉트")
     void t1() {
-        assertThat(mvc.post().uri("/questions/2/answers").param("content", "새 답변"))
+        assertThat(mvc.post().uri("/questions/2/answers").with(csrf()).param("content", "새 답변"))
                 .hasStatus(HttpStatus.FOUND)
                 .hasRedirectedUrl("/questions/2");
 
@@ -39,7 +40,7 @@ class AnswerControllerTest {
     @Test
     @DisplayName("POST /questions/999/answers : 없는 질문이면 404")
     void t2() {
-        assertThat(mvc.post().uri("/questions/999/answers").param("content", "새 답변"))
+        assertThat(mvc.post().uri("/questions/999/answers").with(csrf()).param("content", "새 답변"))
                 .hasStatus(HttpStatus.NOT_FOUND)
                 .failure()
                 .isInstanceOf(DataNotFoundException.class);
@@ -50,7 +51,7 @@ class AnswerControllerTest {
     void t3() {
         int before = questionRepository.findById(2).get().getAnswers().size();
 
-        assertThat(mvc.post().uri("/questions/2/answers").param("content", "  "))
+        assertThat(mvc.post().uri("/questions/2/answers").with(csrf()).param("content", "  "))
                 .hasStatusOk()
                 .hasViewName("question/question/detail")
                 .bodyText()
