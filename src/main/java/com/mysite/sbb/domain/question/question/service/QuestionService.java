@@ -57,4 +57,12 @@ public class QuestionService {
     public void checkAuthor(Question question, String username, String message) {
         if (!question.isAuthor(username)) throw new ResponseStatusException(HttpStatus.FORBIDDEN, message);
     }
+
+    // 삭제: 글쓴이만. cascade REMOVE 로 달린 답변도 먼저 삭제된다 (004-04)
+    @Transactional
+    public void delete(int id, String username) {
+        Question question = getQuestion(id);
+        checkAuthor(question, username, "삭제권한이 없습니다.");
+        questionRepository.delete(question);
+    }
 }

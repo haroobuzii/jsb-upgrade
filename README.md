@@ -418,3 +418,9 @@ com.mysite.sbb
 - 작업: `spring.mvc.hiddenmethod.filter.enabled: true`, `GET /questions/{id}/modify`(기존 값 채운 폼), `PUT /questions/{id}/modify`(폼은 `th:method="put"` → POST + hidden `_method=put`), `Question.isAuthor`, `QuestionService.modify`·`checkAuthor`(글쓴이가 아니면 **403**), 상세에 글쓴이 전용 "수정" 버튼, 테스트 t9·t10
 - 이유: 교재 3-09는 `POST /question/modify/{id}`, 권한 오류 400. 결정 사항대로 HTTP 메서드로 의미를 드러내고(14168 41강 `_method`), 권한 없음은 403 Forbidden
 - 결과: 브라우저에서 user2가 304번 질문 제목 수정 → 상세로 이동, 제목 변경. user1이 user2 글 수정 시도 → 403. 테스트 41개 통과
+
+### 017-02 수정·삭제, 질문 삭제(DELETE, global.js)
+- 링크: [017-02](https://github.com/haroobuzii/jsb-upgrade/commit/017-02)
+- 작업: `DELETE /questions/{id}`(`QuestionService.delete`: 글쓴이만, 아니면 403), `static/resource/global.js`(`<a method="DELETE">` 클릭 → confirm → POST 폼 + `_method` + `_csrf` 전송), layout에서 `global.js` 로드, 상세에 글쓴이 전용 "삭제" 링크, 테스트 t11·t12
+- 이유: 교재 3-09는 삭제를 GET 링크(`/question/delete/{id}`) + JS `location.href`로 한다. GET은 "조회"이고 CSRF 보호도 받지 않으므로 결정 사항대로 DELETE(14168 42~44강 `global.js`, 013-02의 `_csrf` 메타 사용)
+- 결과: 브라우저에서 304번 "삭제" → `/questions`로 이동, 304번은 404. user1이 user2 글 삭제 → 403. `POST + _method=DELETE`도 DELETE로 처리됨을 테스트로 확인. 43개 통과

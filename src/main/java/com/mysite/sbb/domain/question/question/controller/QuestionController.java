@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -123,5 +124,14 @@ public class QuestionController {
         questionService.modify(id, principal.getName(), form.subject(), form.content());
 
         return "redirect:/questions/" + id;
+    }
+
+    // 삭제: DELETE /questions/{id} (링크 → global.js 가 _method=DELETE 폼으로)
+    @DeleteMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public String delete(@PathVariable int id, Principal principal) {
+        questionService.delete(id, principal.getName());
+
+        return "redirect:/questions";
     }
 }

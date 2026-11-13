@@ -148,4 +148,26 @@ class QuestionControllerTest {
 
         assertThat(questionRepository.findById(2).get().getSubject()).isEqualTo("스프링부트 모델 질문입니다.");
     }
+
+    @Test
+    @DisplayName("질문 삭제: 글쓴이가 아니면 403, 글쓴이(user2)는 DELETE 로 삭제(답변도 함께)")
+    void t11() {
+        assertThat(mvc.delete().uri("/questions/2").with(user("user1")).with(csrf()))
+                .hasStatus(HttpStatus.FORBIDDEN);
+        assertThat(questionRepository.findById(2)).isPresent();
+
+        assertThat(mvc.delete().uri("/questions/2").with(user("user2")).with(csrf()))
+                .hasStatus(HttpStatus.FOUND)
+                .hasRedirectedUrl("/questions");
+        assertThat(questionRepository.findById(2)).isEmpty();
+    }
+
+    @Test
+    @DisplayName("질문 삭제: 브라우저 폼처럼 POST + _method=DELETE 로 보내도 DELETE 로 처리된다")
+    void t12() {
+        assertThat(mvc.post().uri("/questions/2").with(user("user2")).with(csrf()).param("_method", "DELETE"))
+                .hasStatus(HttpStatus.FOUND)
+                .hasRedirectedUrl("/questions");
+        assertThat(questionRepository.findById(2)).isEmpty();
+    }
 }

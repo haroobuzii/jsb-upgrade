@@ -9,6 +9,8 @@
     <meta name="_csrf" th:content="${_csrf.token}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/css/bootstrap.min.css">
     <link rel="stylesheet" th:href="@{/resource/style.css}">
+    <!--/* defer: HTML 을 다 읽은 뒤 실행 */-->
+    <script th:src="@{/resource/global.js}" defer></script>
 </head>
 <body>
 <nav th:replace="~{navbar :: navbarFragment}"></nav>
