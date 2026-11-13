@@ -131,3 +131,9 @@
 - 작업: `domain/question/answer/entity/Answer extends BaseEntity`. `@ManyToOne(fetch = LAZY) Question question`, `content`(TEXT), 생성자 `Answer(question, content)`
 - 이유: 답변 여러 개(N)가 질문 하나(1)에 속하므로 `@ManyToOne`. 기본값 EAGER는 답변을 조회할 때마다 질문까지 즉시 조회하므로 14163·14168처럼 LAZY로 지정 (차이는 004에서 SQL로 확인)
 - 결과: `create table answer (..., question_id integer, ...)`와 `alter table answer add constraint FK... foreign key (question_id) references question` → `@ManyToOne`이 외래키 칼럼과 제약을 만든다는 것 확인 (14163 7강)
+
+### 003-04 엔티티, 완료 Question.answers @OneToMany
+- 링크: [003-04](https://github.com/haroobuzii/jsb-upgrade/commit/003-04)
+- 작업: `Question`에 `@OneToMany(mappedBy = "question", cascade = {PERSIST, REMOVE}, orphanRemoval = true) private final List<Answer> answers = new ArrayList<>()`
+- 이유: 질문에서 `question.getAnswers()`로 답변을 바로 꺼내는 객체지향 방식(14163 8~9강). PERSIST는 이후 `question.addAnswer()`로 답변을 만들 때 자동 INSERT, REMOVE는 질문 삭제 시 답변 삭제(교재), orphanRemoval은 목록에서 뺀 답변 삭제(14168 37강). `new ArrayList<>()` 초기화로 NPE 방지(14163 23강)
+- 결과: 재시작 시 DDL 없음 → `@OneToMany`는 DB 칼럼을 만들지 않는다(외래키는 `answer.question_id` 하나). 테스트 통과
