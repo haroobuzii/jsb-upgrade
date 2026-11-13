@@ -2,6 +2,7 @@ package com.mysite.sbb.domain.user.user.service;
 
 import com.mysite.sbb.domain.user.user.entity.SiteUser;
 import com.mysite.sbb.domain.user.user.repository.UserRepository;
+import com.mysite.sbb.global.exception.DataNotFoundException;
 import com.mysite.sbb.global.exception.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,5 +26,12 @@ public class UserService {
 
         // 비밀번호는 암호화해서 저장한다. 평문은 어디에도 남기지 않는다.
         return userRepository.save(new SiteUser(username, passwordEncoder.encode(password), email));
+    }
+
+    // 로그인한 사용자 이름(Principal.getName())으로 회원 엔티티를 찾는다
+    @Transactional(readOnly = true)
+    public SiteUser getUser(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new DataNotFoundException("siteuser not found"));
     }
 }

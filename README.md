@@ -400,3 +400,9 @@ com.mysite.sbb
 - 작업: `Question.author`, `Answer.author`(`@ManyToOne(fetch = LAZY) SiteUser`), 생성자·`addAnswer`·서비스 `write`에 author 매개변수, 샘플 데이터는 회원을 먼저 만들고 질문1=user1, 질문2=user2, 답변=user1·user2. 목록에 "글쓴이" 열, 상세의 질문·답변에 글쓴이. 컨트롤러는 아직 `null`(016-02에서 로그인 사용자)
 - 이유: 교재 3-08. 결정 사항대로 모든 `@ManyToOne`은 LAZY. 016 이전 글은 author가 없으므로 템플릿에서 `?.`(안전 탐색)로 빈칸 처리
 - 결과: DDL `alter table question/answer add column author_id` + 외래키. dev의 기존 글은 글쓴이 빈칸, 테스트 DB 상세에는 user2·user1 표시. 테스트 36개 통과
+
+### 016-02 글쓴이, 로그인 필수와 글쓴이 기록
+- 링크: [016-02](https://github.com/haroobuzii/jsb-upgrade/commit/016-02)
+- 작업: `@EnableMethodSecurity`, 질문 등록(GET·POST)·답변 등록에 `@PreAuthorize("isAuthenticated()")`, `Principal.getName()` → `UserService.getUser` → 글쓴이로 저장. 테스트는 `.with(user("user1"))`, 비로그인 리다이렉트 테스트 추가
+- 이유: 교재 3-08 — 글쓴이를 남기려면 로그인한 사람만 글을 써야 한다. 로그인 안 한 요청은 Security가 로그인 화면으로 보내고, 로그인 후 원래 요청으로 돌려보낸다
+- 결과: 비로그인으로 `/questions/write` → `/users/login` → user2 로그인 → `/questions/write?continue`로 복귀 → 등록한 304번 질문 글쓴이 user2. 테스트 38개 통과

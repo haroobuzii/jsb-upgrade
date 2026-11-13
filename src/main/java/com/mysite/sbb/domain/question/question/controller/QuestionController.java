@@ -3,11 +3,13 @@ package com.mysite.sbb.domain.question.question.controller;
 import com.mysite.sbb.domain.question.answer.controller.AnswerController;
 import com.mysite.sbb.domain.question.question.entity.Question;
 import com.mysite.sbb.domain.question.question.service.QuestionService;
+import com.mysite.sbb.domain.user.user.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,6 +19,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.security.Principal;
 
 
 @Controller
@@ -28,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class QuestionController {
     // 컨트롤러는 리포지터리를 직접 쓰지 않고 서비스를 통한다.
     private final QuestionService questionService;
+    private final UserService userService;
 
     @GetMapping // GET /questions?page=0
     // Model: 컨트롤러 → 템플릿으로 데이터를 넘기는 바구니. 스프링이 만들어서 넣어 준다.
@@ -69,6 +74,7 @@ public class QuestionController {
     // GET /questions/write : 등록 폼 보여 주기
     // @ModelAttribute("form"): 템플릿에서 ${form} 으로 쓴다. 처음엔 빈 값(null) 폼
     @GetMapping("/write")
+    @PreAuthorize("isAuthenticated()") // 로그인 안 했으면 로그인 화면으로
     public String showWrite(@ModelAttribute("form") WriteForm form) {
         return "question/question/write";
     }
@@ -76,10 +82,12 @@ public class QuestionController {
     // POST /questions/write : 등록 처리
     // @Valid: WriteForm 의 검증 규칙 실행. BindingResult: 실패 내용을 담는다(없으면 실패 시 바로 400 예외)
     @PostMapping("/write")
-    public String write(@ModelAttribute("form") @Valid WriteForm form, BindingResult bindingResult) {
+    @PreAuthorize("isAuthenticated()")
+    // Principal: 현재 로그인한 사용자. getName() 은 아이디(username)
+    public String write(@ModelAttribute("form") @Valid WriteForm form, BindingResult bindingResult, Principal principal) {
         if (bindingResult.hasErrors()) return "question/question/write"; // 입력값과 오류를 들고 폼으로
 
-        Question question = questionService.write(null, form.subject(), form.content()); // 글쓴이는 016-02에서 로그인 사용자로
+        Question question = questionService.write(userService.getUser(principal.getName()), form.subject(), form.content());
 
         return "redirect:/questions/" + question.getId();
     }

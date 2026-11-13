@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -65,7 +66,7 @@ class QuestionControllerTest {
     @Test
     @DisplayName("GET /questions/write : 질문 등록 폼")
     void t4() {
-        assertThat(mvc.get().uri("/questions/write"))
+        assertThat(mvc.get().uri("/questions/write").with(user("user1")))
                 .hasStatusOk()
                 .hasViewName("question/question/write")
                 .bodyText()
@@ -75,14 +76,15 @@ class QuestionControllerTest {
     @Test
     @DisplayName("POST /questions/write : 질문이 저장되고 새 질문 상세로 리다이렉트")
     void t5() {
-        assertThat(mvc.post().uri("/questions/write").with(csrf())
+        assertThat(mvc.post().uri("/questions/write").with(csrf()).with(user("user1"))
                 .param("subject", "새 질문")
                 .param("content", "새 질문 내용"))
                 .hasStatus(HttpStatus.FOUND)
                 .redirectedUrl()
                 .startsWith("/questions/");
 
-        assertThat(questionRepository.findBySubject("새 질문")).isPresent();
+        // 글쓴이는 로그인한 사용자
+        assertThat(questionRepository.findBySubject("새 질문").get().getAuthor().getUsername()).isEqualTo("user1");
     }
 
     @Test
@@ -90,7 +92,7 @@ class QuestionControllerTest {
     void t6() {
         long before = questionRepository.count();
 
-        assertThat(mvc.post().uri("/questions/write").with(csrf())
+        assertThat(mvc.post().uri("/questions/write").with(csrf()).with(user("user1"))
                 .param("subject", " ")
                 .param("content", ""))
                 .hasStatusOk()
@@ -99,5 +101,13 @@ class QuestionControllerTest {
                 .contains("제목을 입력해주세요.", "내용을 입력해주세요.");
 
         assertThat(questionRepository.count()).isEqualTo(before);
+    }
+
+    @Test
+    @DisplayName("로그인하지 않으면 GET /questions/write 는 로그인 화면으로")
+    void t7() {
+        assertThat(mvc.get().uri("/questions/write"))
+                .hasStatus(HttpStatus.FOUND)
+                .redirectedUrl().endsWith("/users/login");
     }
 }

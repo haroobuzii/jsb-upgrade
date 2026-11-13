@@ -2,6 +2,7 @@ package com.mysite.sbb.global.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -10,6 +11,8 @@ import org.springframework.security.web.SecurityFilterChain;
 
 // 스프링 시큐리티 설정. 의존성만 넣으면 기본값: 모든 요청 인증 필요(→ /login), POST·PUT·DELETE 는 CSRF 토큰 검사
 @Configuration
+// 메서드에 @PreAuthorize("isAuthenticated()") 를 붙여 로그인 필요 여부를 정할 수 있게 한다
+@EnableMethodSecurity
 public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) {
