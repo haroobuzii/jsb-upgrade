@@ -33,7 +33,8 @@ class QuestionControllerTest {
                 .bodyText()
                 .contains("sbb가 무엇인가요?", "스프링부트 모델 질문입니다.")
                 .contains("href=\"/questions/1\"", "href=\"/questions/2\"") // 상세 링크
-                .contains("<title>질문 목록 | SBB</title>");                  // layout.html 적용
+                .contains("<title>질문 목록 | SBB</title>")                   // layout.html 적용
+                .contains("navbar-brand");                                     // navbar.html 적용
     }
 
     @Test

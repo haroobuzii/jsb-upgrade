@@ -310,3 +310,9 @@ com.mysite.sbb
 - 작업: 질문 등록·답변 폼에 `onsubmit="...(this); return false;"` + 검증 함수(앞뒤 공백 제거, 비었으면 알림·포커스 후 중단, 통과하면 `form.submit()`)
 - 이유: 14168 35~36강 — 서버 검증은 무조건, 클라이언트 검증은 빠른 피드백용. 브라우저 개발자 도구에서 JavaScript를 끄면 우회되므로 서버 검증이 진짜 방어선
 - 결과: 브라우저에서 빈 제목 → 전송 안 됨·제목 포커스, 빈 내용 → 내용 포커스, 모두 채우면 전송. JS를 거치지 않는 MockMvc 테스트(t6, t3)가 서버 검증을 계속 확인. 테스트 25개 통과
+
+### 011-01 내비게이션 바, 시작 navbar 조각
+- 링크: [011-01](https://github.com/haroobuzii/jsb-upgrade/commit/011-01)
+- 작업: `templates/navbar.html`(`th:fragment="navbarFragment"`, SBB 로고 → `/`, 로그인 자리), `layout.html`에 `<nav th:replace="~{navbar :: navbarFragment}">`. 목록 테스트에 `navbar-brand` 확인
+- 이유: 교재 3-01 — 모든 페이지 위에 같은 메뉴. layout에 직접 쓰지 않고 조각 파일로 분리해 메뉴만 따로 관리
+- 결과: 모든 화면 상단에 "SBB 로그인" 바. 로고를 누르면 `/` → `/questions`. 테스트 25개 통과

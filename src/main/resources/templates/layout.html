@@ -9,6 +9,7 @@
     <link rel="stylesheet" th:href="@{/resource/style.css}">
 </head>
 <body>
+<nav th:replace="~{navbar :: navbarFragment}"></nav>
 <!--/* 각 페이지의 layout:fragment="content" 부분이 이 자리에 들어간다 */-->
 <th:block layout:fragment="content"></th:block>
 </body>
