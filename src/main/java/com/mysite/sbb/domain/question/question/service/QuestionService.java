@@ -2,6 +2,7 @@ package com.mysite.sbb.domain.question.question.service;
 
 import com.mysite.sbb.domain.question.question.entity.Question;
 import com.mysite.sbb.domain.question.question.repository.QuestionRepository;
+import com.mysite.sbb.global.exception.DataNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,10 +23,10 @@ public class QuestionService {
         return questionRepository.findAll();
     }
 
-    // 1단계: Optional.get() — 없는 id면 NoSuchElementException(500, "No value present")
-    // 다음 커밋들에서 404로 바꾼다.
+    // 없는 id면 DataNotFoundException → 404 (get() 이었을 때는 NoSuchElementException → 500)
     @Transactional(readOnly = true)
     public Question getQuestion(int id) {
-        return questionRepository.findById(id).get();
+        return questionRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("question not found"));
     }
 }

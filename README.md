@@ -238,3 +238,9 @@ com.mysite.sbb
 - 작업: 목록의 제목을 `<a th:href="@{|/question/detail/${question.id}|}">`로 감쌈, 컨트롤러 테스트 t1에 링크 확인 추가
 - 이유: 교재 2-10, 14163 35강 2단계. `@{...}`는 URL을 만들 때(컨텍스트 경로 자동 포함), `|...|`는 문자열 안에 값을 끼워 넣을 때 쓴다(14163 35강 비교표)
 - 결과: 목록 HTML에 `href="/question/detail/1"`, `"/question/detail/2"`. 브라우저에서 제목 클릭 → 상세 화면 이동. 테스트 18개 통과
+
+### 007-03 상세, 없는 질문은 404 (DataNotFoundException)
+- 링크: [007-03](https://github.com/haroobuzii/jsb-upgrade/commit/007-03)
+- 작업: `global/exception/DataNotFoundException`(`@ResponseStatus(NOT_FOUND, reason = "entity not found")`), `getQuestion`을 `findById(id).orElseThrow(() -> new DataNotFoundException("question not found"))`로 변경, 컨트롤러 테스트 t3(404)
+- 이유: "없는 데이터"는 서버 고장(500)이 아니라 요청한 대상이 없는 것(404)이다. 구체적인 예외가 문제 파악에 도움이 된다(14163 35강 "커스텀 예외를 만드는 이유"). 교재의 `isPresent()/get()/else throw` 대신 결정 사항대로 `orElseThrow` 한 줄
+- 결과: `/question/detail/999` → 500(`No value present`)에서 404(`entity not found`)로 바뀜. 테스트 19개 통과

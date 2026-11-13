@@ -1,10 +1,12 @@
 package com.mysite.sbb.domain.question.question.controller;
 
+import com.mysite.sbb.global.exception.DataNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,5 +40,16 @@ class QuestionControllerTest {
                 .hasViewName("question/question/detail")
                 .bodyText()
                 .contains("스프링부트 모델 질문입니다.", "id는 자동으로 생성되나요?");
+    }
+
+    @Test
+    @DisplayName("GET /question/detail/999 : 없는 질문이면 404")
+    void t3() {
+        assertThat(mvc.get().uri("/question/detail/999"))
+                .hasStatus(HttpStatus.NOT_FOUND)
+                .hasFailed()
+                .failure()
+                .isInstanceOf(DataNotFoundException.class)
+                .hasMessage("question not found");
     }
 }
