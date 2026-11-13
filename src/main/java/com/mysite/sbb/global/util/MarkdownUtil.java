@@ -9,8 +9,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class MarkdownUtil {
     private final Parser parser = Parser.builder().build();
-    // 주의: 교재 그대로의 설정. 글 안의 HTML(<script> 등)도 그대로 통과시킨다 → 020-02에서 막는다
-    private final HtmlRenderer renderer = HtmlRenderer.builder().build();
+    // XSS 방지 (결정 사항)
+    // escapeHtml(true): 글 안에 직접 쓴 HTML(<script> 등)을 태그가 아니라 글자(&lt;script&gt;)로 바꾼다
+    // sanitizeUrls(true): 링크·이미지 주소의 javascript: 같은 위험한 스킴을 지운다 → [클릭](javascript:...) 차단
+    private final HtmlRenderer renderer = HtmlRenderer.builder()
+            .escapeHtml(true)
+            .sanitizeUrls(true)
+            .build();
 
     public String toHtml(String markdown) {
         Node document = parser.parse(markdown);

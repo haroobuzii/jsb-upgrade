@@ -16,4 +16,20 @@ class MarkdownUtilTest {
 
         assertThat(html).contains("<h1>제목</h1>", "<li>목록</li>", "<strong>굵게</strong>");
     }
+
+    @Test
+    @DisplayName("XSS 방지: 글 안의 <script> 는 태그가 아니라 글자로")
+    void t2() {
+        String html = markdownUtil.toHtml("안녕\n\n<script>alert(1)</script>");
+
+        assertThat(html).doesNotContain("<script>").contains("&lt;script&gt;");
+    }
+
+    @Test
+    @DisplayName("XSS 방지: javascript: 링크는 주소가 지워진다")
+    void t3() {
+        String html = markdownUtil.toHtml("[클릭](javascript:alert(1))");
+
+        assertThat(html).doesNotContain("javascript:");
+    }
 }
