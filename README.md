@@ -137,3 +137,9 @@
 - 작업: `Question`에 `@OneToMany(mappedBy = "question", cascade = {PERSIST, REMOVE}, orphanRemoval = true) private final List<Answer> answers = new ArrayList<>()`
 - 이유: 질문에서 `question.getAnswers()`로 답변을 바로 꺼내는 객체지향 방식(14163 8~9강). PERSIST는 이후 `question.addAnswer()`로 답변을 만들 때 자동 INSERT, REMOVE는 질문 삭제 시 답변 삭제(교재), orphanRemoval은 목록에서 뺀 답변 삭제(14168 37강). `new ArrayList<>()` 초기화로 NPE 방지(14163 23강)
 - 결과: 재시작 시 DDL 없음 → `@OneToMany`는 DB 칼럼을 만들지 않는다(외래키는 `answer.question_id` 하나). 테스트 통과
+
+### 004-01 리포지터리, 시작 QuestionRepository와 저장 테스트
+- 링크: [004-01](https://github.com/haroobuzii/jsb-upgrade/commit/004-01)
+- 작업: `QuestionRepository`, `AnswerRepository`(`JpaRepository<엔티티, Integer>`), `QuestionRepositoryTest` t1(save)
+- 이유: 리포지터리는 인터페이스만 선언하면 Spring Data JPA가 구현체를 만들어 준다(교재 2-05). 테스트는 14163 방식(`@ActiveProfiles("test")`, 클래스 `@Transactional` 롤백, `@DisplayName`, AssertJ)
+- 결과: INSERT SQL과 바인딩 값 로그에서 `create_date`·`modify_date`가 자동으로 채워짐(Auditing) 확인. 저장 전 id 0 → 저장 후 1 이상. 테스트는 메모리 DB를 써서 교재처럼 "서버를 먼저 꺼야 하는(파일 잠금)" 문제가 없음
