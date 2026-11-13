@@ -2,14 +2,18 @@ package com.mysite.sbb.domain.question.question.controller;
 
 import com.mysite.sbb.domain.question.question.entity.Question;
 import com.mysite.sbb.domain.question.question.service.QuestionService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -42,17 +46,32 @@ public class QuestionController {
         return "question/question/detail";
     }
 
+    // 폼 입력값을 담는 객체 (record: 필드·생성자·getter 를 한 줄로, 14168 40강)
+    // 메시지 앞의 "01-subject-" : 정렬 순서-필드명-메시지. form_errors.html 이 나눠서 쓴다 (14168 24강)
+    public record WriteForm(
+            @NotBlank(message = "01-subject-제목을 입력해주세요.")
+            @Size(max = 200, message = "02-subject-제목은 200자 이하로 입력해주세요.")
+            String subject,
+            @NotBlank(message = "03-content-내용을 입력해주세요.")
+            String content
+    ) {
+    }
+
     // 같은 URL 이라도 HTTP 메서드로 구분한다 (14168 26강)
     // GET /questions/write : 등록 폼 보여 주기
+    // @ModelAttribute("form"): 템플릿에서 ${form} 으로 쓴다. 처음엔 빈 값(null) 폼
     @GetMapping("/write")
-    public String showWrite() {
+    public String showWrite(@ModelAttribute("form") WriteForm form) {
         return "question/question/write";
     }
 
     // POST /questions/write : 등록 처리
+    // @Valid: WriteForm 의 검증 규칙 실행. BindingResult: 실패 내용을 담는다(없으면 실패 시 바로 400 예외)
     @PostMapping("/write")
-    public String write(@RequestParam String subject, @RequestParam String content) {
-        Question question = questionService.write(subject, content);
+    public String write(@ModelAttribute("form") @Valid WriteForm form, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) return "question/question/write"; // 입력값과 오류를 들고 폼으로
+
+        Question question = questionService.write(form.subject(), form.content());
 
         return "redirect:/questions/" + question.getId();
     }

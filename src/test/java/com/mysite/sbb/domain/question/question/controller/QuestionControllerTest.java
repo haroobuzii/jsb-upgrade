@@ -78,4 +78,20 @@ class QuestionControllerTest {
 
         assertThat(questionRepository.findBySubject("새 질문")).isPresent();
     }
+
+    @Test
+    @DisplayName("POST /questions/write : 제목·내용이 비면 저장하지 않고 폼과 오류 메시지를 다시 보여 준다")
+    void t6() {
+        long before = questionRepository.count();
+
+        assertThat(mvc.post().uri("/questions/write")
+                .param("subject", " ")
+                .param("content", ""))
+                .hasStatusOk()
+                .hasViewName("question/question/write")
+                .bodyText()
+                .contains("제목을 입력해주세요.", "내용을 입력해주세요.");
+
+        assertThat(questionRepository.count()).isEqualTo(before);
+    }
 }

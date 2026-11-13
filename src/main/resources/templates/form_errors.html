@@ -1,0 +1,27 @@
+<!--/*
+  폼 오류 표시 조각 (14168 23~25강)
+  - 메시지 형식 "01-subject-제목을 입력해주세요." 를 정렬해서 순서를 고정하고
+  - "-" 로 3조각(순서, 필드명, 메시지)으로 나눠 메시지만 보여 준다.
+  - 첫 번째 오류 필드에 포커스를 준다.
+  사용: 폼 안에서 <div th:replace="~{form_errors :: formErrorsFragment}"></div>
+*/-->
+<th:block th:fragment="formErrorsFragment">
+    <div th:if="${#fields.hasAnyErrors()}" class="alert alert-danger" role="alert">
+        <div th:each="err : ${#fields.allErrors().stream().sorted()}"
+             th:with="errStrs = ${err.split('-', 3)}"
+             th:data-error-field-name="${errStrs[1]}"
+             th:text="${errStrs[2]}"></div>
+    </div>
+    <script>
+        // 지금까지 나온 폼 중 마지막 폼(= 이 조각이 들어 있는 폼)의 첫 오류 필드에 포커스
+        // 이 스크립트는 폼 앞부분에서 실행되므로 아래쪽 입력칸은 아직 없다.
+        // → 폼은 지금 찾아 두고, 포커스는 문서를 다 읽은 뒤(DOMContentLoaded) 준다.
+        (() => {
+            const forms = document.querySelectorAll('form');
+            const lastForm = forms[forms.length - 1];
+            const fieldName = lastForm.querySelector('[data-error-field-name]')?.dataset?.errorFieldName || '';
+            if (fieldName.length === 0) return;
+            document.addEventListener('DOMContentLoaded', () => lastForm[fieldName]?.focus());
+        })();
+    </script>
+</th:block>

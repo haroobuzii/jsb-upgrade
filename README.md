@@ -292,3 +292,9 @@ com.mysite.sbb
 - 작업: `GET /questions/write`(폼), `POST /questions/write`(`@RequestParam subject, content` → `QuestionService.write` → 새 질문 상세로 리다이렉트), `write.html`, 목록에 "질문 등록하기" 버튼, 테스트 t4·t5
 - 이유: 교재 2-16. URL은 결정 사항대로 같은 `/questions/write`를 GET(폼)·POST(처리)로 구분(교재 `/question/create`, 14168 26강). 폼의 `th:action`을 비워 현재 주소로 전송. 등록 후에는 목록 대신 새 질문 상세로(14168 방식, AI 판단). 이 단계는 아직 검증이 없다
 - 결과: 브라우저에서 질문 등록 → `/questions/3` 상세로 이동. 테스트 23개 통과
+
+### 010-02 질문 등록, 서버 검증(record 폼, form_errors)
+- 링크: [010-02](https://github.com/haroobuzii/jsb-upgrade/commit/010-02)
+- 작업: `spring-boot-starter-validation`, 컨트롤러 안 `record WriteForm(@NotBlank @Size subject, @NotBlank content)`, `@ModelAttribute("form") @Valid` + `BindingResult`, `th:object`/`th:field`, `form_errors.html` 조각(메시지 `01-subject-...` 정렬·분리, 첫 오류 필드 포커스), 테스트 t6
+- 이유: 교재 2-16의 `QuestionForm`(@Getter @Setter 클래스)·`form_errors` 대신 14168 방식(record 폼, `@ModelAttribute("form")`, 정렬·포커스되는 오류 조각). 빈 제목·내용은 저장하지 않는다
+- 결과: 빈 폼 제출 → "제목을 입력해주세요." "내용을 입력해주세요." 순서대로 표시, 입력값 유지. 제목만 입력 → 내용 칸에 포커스. 포커스 스크립트가 처음엔 아래쪽 입력칸이 아직 없을 때 실행돼 `undefined.focus()` 오류 → `DOMContentLoaded` 뒤로 미뤄 해결. 테스트 24개 통과
