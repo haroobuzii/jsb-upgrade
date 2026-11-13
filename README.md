@@ -96,7 +96,13 @@
 - 정정(002-01에서 추가): 커밋 메시지의 "교재·강사 방식은 `perform().andExpect()`"라는 설명은 틀림. 교재·강사에는 컨트롤러(MockMvc) 테스트가 없음. 이 테스트는 교재·강사에 없는 것을 `docs/analysis.md` 결정 사항에 따라 **추가**한 것
 
 ### 002-01 JPA·H2, 시작 application.yaml로 전환
-- 링크: (다음 커밋에서 추가)
+- 링크: [afe312e](https://github.com/haroobuzii/jsb-upgrade/commit/afe312e)
 - 작업: `application.properties` → `application.yaml` (내용은 `spring.application.name: sbb` 그대로), `docs/analysis.md`에 컨트롤러 테스트 결정 추가, 001-03 정정 메모
 - 이유: 다음 커밋부터 dev/test 프로파일, JPA, 로그 설정이 늘어난다. yaml은 들여쓰기로 계층을 표현해 `spring.jpa.properties.hibernate...` 같은 긴 키의 반복이 없어 읽기 쉬움 (14163·14168 모두 yaml 사용)
 - 결과: 앱 재시작 로그에 `[sbb]`(앱 이름) 그대로 출력 → yaml을 읽음, `/sbb` 200, `./gradlew test` 통과
+
+### 002-02 JPA·H2, H2와 dev/test 프로파일
+- 링크: (다음 커밋에서 추가)
+- 작업: `h2`, `spring-boot-h2console` 의존성 추가, `profiles.active: dev`, `application-dev.yaml`(`jdbc:h2:./db_dev;MODE=MySQL`), `application-test.yaml`(`jdbc:h2:mem:db_test;MODE=MySQL`), 테스트 2개에 `@ActiveProfiles("test")`
+- 이유: 개발 DB와 테스트 DB를 분리해 테스트가 개발 데이터를 건드리지 않게 하고(테스트는 메모리 DB라 끝나면 사라짐), DB 파일을 프로젝트 폴더에 둬 이 프로젝트 전용으로 만들기 위함. dev·test 모두 `MODE=MySQL`로 같은 SQL 문법 사용 (14163 `005`, 14168 2강)
+- 결과: 앱은 `profile is active: "dev"`, 테스트 2개는 `"test"`로 실행. `/h2-console` 접속 가능하지만 연결 시 `Database ... db_dev not found` → 앱에 아직 JDBC(HikariCP)가 없어 DB 파일이 만들어지지 않음. 002-03에서 JPA를 넣으면 해결 (교재가 빈 `local.mv.db`를 직접 만든 이유와 같음)
