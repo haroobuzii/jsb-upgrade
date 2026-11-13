@@ -12,4 +12,11 @@ public class MainController {
     public String index() {
         return "안녕하세요 sbb에 오신 것을 환영합니다.";
     }
+
+    // 루트 URL(/)로 오면 질문 목록으로 보낸다.
+    // "redirect:주소" → 302 응답 + Location 헤더 → 브라우저가 그 주소로 다시 요청
+    @GetMapping("/")
+    public String root() {
+        return "redirect:/question/list";
+    }
 }

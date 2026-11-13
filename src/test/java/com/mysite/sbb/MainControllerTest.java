@@ -28,4 +28,12 @@ class MainControllerTest {
                 .hasContentTypeCompatibleWith(MediaType.TEXT_PLAIN)
                 .hasBodyTextEqualTo("안녕하세요 sbb에 오신 것을 환영합니다.");
     }
+
+    @Test
+    @DisplayName("GET / 는 질문 목록으로 리다이렉트(302)한다")
+    void t2() {
+        assertThat(mvc.get().uri("/"))
+                .hasStatus(HttpStatus.FOUND)
+                .hasRedirectedUrl("/question/list");
+    }
 }

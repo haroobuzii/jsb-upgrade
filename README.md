@@ -213,3 +213,9 @@ com.mysite.sbb
 - 작업: `QuestionController`(`@RequiredArgsConstructor` 생성자 주입, `GET /question/list`, `Model`에 `questionList`), `templates/question/question/list.html`(`th:each`, `th:text`), `QuestionControllerTest` t1
 - 이유: 교재 2-07 그대로 컨트롤러가 리포지터리로 목록을 조회해 Model로 템플릿에 넘긴다(서비스는 006-04). 템플릿 위치는 패키지와 같은 `question/question/list.html`(14168 `post/post/list.html` 방식, AI 판단). 템플릿 주석은 응답에 나가지 않는 Thymeleaf 주석 `<!--/* */-->` 사용
 - 결과: 브라우저에서 `/question/list`에 번호·제목·작성일시 2건 표시. 템플릿 수정이 재컴파일 없이 새로고침만으로 반영(006-01 prefix 설정). 테스트 16개 통과
+
+### 006-03 질문 목록, 루트 URL 리다이렉트
+- 링크: [006-03](https://github.com/haroobuzii/jsb-upgrade/commit/006-03)
+- 작업: `MainController.root()` — `GET /` → `redirect:/question/list`. `MainControllerTest` t2(302, Location)
+- 이유: 사이트 주소만 입력해도 질문 목록이 보이게 함(교재 2-08, 14163 33강). `redirect:`는 302 응답으로 브라우저가 새 주소로 다시 요청하게 한다
+- 결과: `curl -i /` → `302`, `Location: http://localhost:8080/question/list`. 브라우저에서 `/` 접속 시 주소창이 `/question/list`로 바뀌며 목록 표시. 테스트 17개 통과
