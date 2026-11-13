@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
 import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 
@@ -80,6 +81,25 @@ class UserControllerTest {
                 .param("username", "user1").param("password", "wrong"))
                 .hasStatus(HttpStatus.FOUND)
                 .hasRedirectedUrl("/users/login?error")
+                .matches(unauthenticated());
+    }
+
+    @Test
+    @DisplayName("내비게이션 바: 비로그인은 로그인·회원가입, 로그인하면 아이디와 로그아웃")
+    void t6() {
+        assertThat(mvc.get().uri("/questions"))
+                .bodyText().contains("/users/login", "/users/signup").doesNotContain("로그아웃");
+
+        assertThat(mvc.get().uri("/questions").with(user("user1")))
+                .bodyText().contains("user1", "로그아웃").doesNotContain("/users/signup");
+    }
+
+    @Test
+    @DisplayName("POST /users/logout : 로그아웃 후 / 로, 인증 해제")
+    void t7() {
+        assertThat(mvc.post().uri("/users/logout").with(user("user1")).with(csrf()))
+                .hasStatus(HttpStatus.FOUND)
+                .hasRedirectedUrl("/")
                 .matches(unauthenticated());
     }
 }

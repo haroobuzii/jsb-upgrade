@@ -388,3 +388,9 @@ com.mysite.sbb
 - 작업: `UserSecurityService implements UserDetailsService`(아이디로 회원 조회 → 암호화된 비밀번호·`ROLE_USER`), `SecurityConfig.formLogin`(`loginPage("/users/login")`, 성공 시 `/`), `GET /users/login` 화면, 내비게이션 바 로그인 링크, `BaseInitData.work2`에 샘플 회원 user1·user2(로컬 개발·테스트 전용), 테스트 t4(성공·인증됨)·t5(실패 `?error`)
 - 이유: 교재 3-07. 로그인 POST 처리(비밀번호 비교, 세션 생성)는 Security가 하고 우리는 "아이디로 회원을 찾는 법"(`UserDetailsService`)만 알려 준다. 교재의 `AuthenticationManager` 빈과 `UserRole`(admin 구분)은 미션 1에서 쓰지 않아 생략(AI 판단)
 - 결과: 틀린 비밀번호 → `/users/login?error` "아이디 또는 비밀번호를 확인해 주세요." 맞으면 `/`로 이동. 테스트 34개 통과
+
+### 015-02 로그인, 완료 로그아웃(POST)과 내비게이션 바
+- 링크: [015-02](https://github.com/haroobuzii/jsb-upgrade/commit/015-02)
+- 작업: `thymeleaf-extras-springsecurity6`, 내비게이션 바 `sec:authorize`(비로그인: 로그인·회원가입 / 로그인: 아이디·로그아웃), 로그아웃은 `POST /users/logout` 폼 버튼, `SecurityConfig.logout(logoutUrl, logoutSuccessUrl("/"))`, 테스트 t6·t7
+- 이유: 교재 3-07은 로그아웃을 GET 링크로 하려고 `logoutRequestMatcher(new AntPathRequestMatcher(...))`를 쓴다(Security 7에서 제거). 결정 사항대로 POST(CSRF 토큰 필요) — 다른 사이트가 몰래 로그아웃시키는 것을 막는다
+- 결과: 브라우저 로그인 → "user1 로그아웃", 로그아웃 클릭 → "로그인 회원가입". `GET /users/logout`은 404(로그아웃 안 됨). Boot 4.1.2가 관리하는 확장 이름은 Security 7에서도 `...springsecurity6`. 테스트 36개 통과

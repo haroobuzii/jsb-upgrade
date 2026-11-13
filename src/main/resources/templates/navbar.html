@@ -1,5 +1,5 @@
 <!--/* 모든 페이지 위쪽에 들어가는 내비게이션 바 (layout.html 에서 th:replace 로 삽입) */-->
-<nav th:fragment="navbarFragment" class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+<nav th:fragment="navbarFragment" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
     <div class="container-fluid">
         <a class="navbar-brand" th:href="@{/}">SBB</a>
         <!--/* 화면이 좁으면 메뉴를 접고 이 버튼(햄버거)으로 펼친다. 동작에는 Bootstrap JS 가 필요 (011-02) */-->
@@ -9,11 +9,22 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
+                <!--/* sec:authorize: 로그인 상태에 따라 보이기/숨기기 (thymeleaf-extras-springsecurity) */-->
+                <li class="nav-item" sec:authorize="isAnonymous()">
                     <a class="nav-link" th:href="@{/users/login}">로그인</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" sec:authorize="isAnonymous()">
                     <a class="nav-link" th:href="@{/users/signup}">회원가입</a>
+                </li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <!--/* 로그인한 아이디 */-->
+                    <span class="nav-link" sec:authentication="name"></span>
+                </li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <!--/* 로그아웃은 POST 폼(CSRF 토큰 포함). 링크처럼 보이게 btn-link */-->
+                    <form th:action="@{/users/logout}" method="post">
+                        <button type="submit" class="nav-link btn btn-link">로그아웃</button>
+                    </form>
                 </li>
             </ul>
         </div>

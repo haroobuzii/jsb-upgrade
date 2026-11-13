@@ -35,6 +35,12 @@ public class SecurityConfig {
                 .formLogin(formLogin -> formLogin
                         .loginPage("/users/login")
                         .defaultSuccessUrl("/")
+                )
+                // 로그아웃은 POST /users/logout 만 받는다(기본값). GET 링크로는 로그아웃되지 않는다.
+                // → 다른 사이트의 <img src=".../logout"> 같은 것으로 몰래 로그아웃시키는 것을 막는다(CSRF 토큰 필요)
+                .logout(logout -> logout
+                        .logoutUrl("/users/logout")
+                        .logoutSuccessUrl("/")
                 );
 
         return http.build();
