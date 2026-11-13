@@ -83,7 +83,13 @@
 - 결과: `/sbb` 응답이 404 → 500(`Circular view path [sbb]`)으로 바뀜. 서버 콘솔에는 `index() 메서드 호출됨!` 출력 → 메서드는 실행됐지만 응답 생성에서 실패
 
 ### 001-02 hello 컨트롤러, @ResponseBody로 문자열 응답
-- 링크: (다음 커밋에서 추가)
+- 링크: [cce8380](https://github.com/haroobuzii/jsb-upgrade/commit/cce8380)
 - 작업: `index()`의 반환형을 `String`으로 바꾸고 `@ResponseBody` 추가, `"안녕하세요 sbb에 오신 것을 환영합니다."` 반환
 - 이유: `@ResponseBody`가 없으면 반환값(또는 URL)을 뷰 이름으로 해석한다. `@ResponseBody`를 붙이면 반환값이 응답 본문 그 자체가 되어 뷰를 찾지 않음 (교재 2-02, 14163 4강)
 - 결과: `/sbb` 응답이 500 → 200, `Content-Type: text/plain;charset=UTF-8`, 브라우저에 환영 문자열 출력
+
+### 001-03 hello 컨트롤러, 완료 MockMvc 테스트
+- 링크: (다음 커밋에서 추가)
+- 작업: `MainControllerTest` 추가. `@SpringBootTest` + `@AutoConfigureMockMvc` + `MockMvcTester`(AssertJ 방식)로 `GET /sbb`의 상태·Content-Type·본문 검증
+- 이유: 브라우저로 눈으로 확인한 동작을 테스트 코드로 고정해, 이후 변경으로 깨지면 바로 알 수 있게 하기 위함. 결정 사항(테스트는 AssertJ)에 맞춰 예전 `perform().andExpect()` 대신 `MockMvcTester` 사용
+- 결과: `./gradlew test` 2개 통과. 기대 문자열을 일부러 틀리게 바꾸면 `expected / but was` 메시지로 실패하는 것도 확인 후 원복
