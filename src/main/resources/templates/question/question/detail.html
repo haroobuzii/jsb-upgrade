@@ -7,8 +7,9 @@
     <h2 class="border-bottom py-2" th:text="${question.subject}"></h2>
     <div class="card my-3">
         <div class="card-body">
-            <!--/* white-space: pre-line → 입력한 줄바꿈을 그대로 보여 준다 */-->
-            <div class="card-text" style="white-space: pre-line;" th:text="${question.content}"></div>
+            <!--/* 마크다운 → HTML. th:utext: 이스케이프하지 않고 HTML 그대로 출력 (@markdownUtil: 스프링 빈)
+                 Thymeleaf 3.1+ 는 th:utext 안에서 빈 호출을 막으므로 th:with 로 먼저 계산해 변수로 넘긴다 */-->
+            <div class="card-text" th:with="html=${@markdownUtil.toHtml(question.content)}" th:utext="${html}"></div>
             <div class="d-flex justify-content-end">
                 <!--/* 수정된 적이 있으면 수정 일시도 보여 준다 (교재 3-09 modified at) */-->
                 <div th:if="${question.modified}" class="badge bg-light text-dark p-2 text-start mx-3">
@@ -45,7 +46,7 @@
     <!--/* id="answer_{id}": 주소 끝의 #answer_{id} 와 같은 id 를 가진 요소로 브라우저가 스크롤한다 (교재 3-11 앵커) */-->
     <div class="card my-3" th:each="answer : ${question.answers}" th:id="|answer_${answer.id}|">
         <div class="card-body">
-            <div class="card-text" style="white-space: pre-line;" th:text="${answer.content}"></div>
+            <div class="card-text" th:with="html=${@markdownUtil.toHtml(answer.content)}" th:utext="${html}"></div>
             <div class="d-flex justify-content-end">
                                 <div th:if="${answer.modified}" class="badge bg-light text-dark p-2 text-start mx-3">
                     <div class="mb-2">modified at</div>

@@ -460,3 +460,9 @@ com.mysite.sbb
 - 작업: 상세의 답변 카드에 `th:id="|answer_${answer.id}|"`, 답변 등록·수정·추천 후 `redirect:/questions/{qid}#answer_{id}`. 등록 때는 `answerRepository.flush()`로 INSERT를 먼저 내보내 id 확보. 테스트의 리다이렉트 주소 갱신
 - 이유: 교재 3-11 — 답변을 달거나 추천하면 페이지 맨 위로 돌아가 방금 작업한 답변을 다시 찾아야 한다. URL 끝의 `#id`(앵커)로 그 요소까지 스크롤. 우리 답변 생성은 cascade PERSIST라 트랜잭션 끝까지 id가 0 → `flush`로 해결(교재는 `save` 후 id 사용)
 - 결과: 브라우저에서 2번 질문에 답변 등록 → `/questions/2#answer_6`, `id="answer_6"` 요소로 스크롤(내장 브라우저는 Bootstrap의 smooth 스크롤이 느려 즉시 스크롤로 위치 확인). 테스트 48개 통과
+
+### 020-01 마크다운, 시작 commonmark 적용 (XSS 취약 상태 확인)
+- 링크: [020-01](https://github.com/haroobuzii/jsb-upgrade/commit/020-01)
+- 작업: `org.commonmark:commonmark:0.32.0`, `global/util/MarkdownUtil`(빈, `toHtml`), 상세의 질문·답변 내용을 `th:with`로 HTML 변환 후 `th:utext`로 출력, `MarkdownUtilTest`
+- 이유: 교재 3-12 그대로 적용해 동작과 문제를 먼저 본다(결정 사항: 적용 전 `<script>` 실행을 먼저 보여 줌). 교재의 `th:utext="${@commonUtil.markdown(...)}"`는 Thymeleaf 3.1+가 `th:utext` 안의 빈 호출을 막아 500 → `th:with`로 먼저 계산
+- 결과: 306번 질문의 마크다운이 제목·목록·굵게로 표시. **그러나 내용에 넣은 `<script>document.title = "XSS 실행됨"</script>`가 실행됨(탭 제목 변경) → XSS 취약. 020-02에서 해결.** 테스트 49개 통과
