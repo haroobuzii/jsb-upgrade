@@ -25,6 +25,33 @@
 - 모든 커밋에 커밋 번호와 같은 태그를 단다(`003-01`). 기능이 끝나면 기능 번호 태그도 단다(`003`).
 - 그래서 `https://github.com/haroobuzii/jsb-upgrade/commit/003-01`처럼 **번호만으로 커밋을 열 수 있고**, 작업내역의 링크도 같은 커밋에서 바로 적는다.
 
+## 패키지 구조
+
+교재 2-06은 `com.mysite.sbb` 하나에 모인 파일을 `question`, `answer`, `user` 패키지로 옮긴다.
+이 프로젝트는 14168 방식대로 처음(003)부터 아래 구조로 만들었다.
+
+```text
+com.mysite.sbb
+├── SbbApplication, MainController
+├── domain                         # 기능(도메인)별
+│   └── question                   # 질문 도메인
+│       ├── question               # 질문 자체
+│       │   ├── entity             # Question
+│       │   ├── repository         # QuestionRepository
+│       │   ├── service            # (006~)
+│       │   └── controller         # (006~)
+│       └── answer                 # 질문에 달리는 답변
+│           ├── entity             # Answer
+│           └── repository         # AnswerRepository
+└── global                         # 특정 도메인에 속하지 않는 공통 코드
+    ├── jpa/entity                 # BaseEntity
+    └── initData                   # BaseInitData (샘플 데이터)
+```
+
+- 교재 `com.mysite.sbb.question.Question` → 여기서는 `com.mysite.sbb.domain.question.question.entity.Question`
+- 도메인 아래를 다시 `entity / repository / service / controller`로 나눈 이유: 같은 종류의 클래스가 늘어나도 위치가 정해져 있어 찾기 쉽다 (14168)
+- 답변이 `domain.question` 아래에 있는 이유: 답변은 질문 없이 존재할 수 없다 (14168의 `post.postComment`와 같은 배치)
+
 ## 로드맵
 
 자료 분석, 결정 사항, 강사 참고 강 번호까지 담은 전체 로드맵은 [docs/analysis.md](docs/analysis.md)에 있다.
@@ -167,3 +194,10 @@
 - 작업: `AnswerRepositoryTest` t1(addAnswer + flush로 INSERT), t2(`answer.getQuestion()`은 LAZY 프록시, 쓰는 순간 SELECT), t3(`question.getAnswers()`), t4(orphanRemoval), t5(트랜잭션 없이 LAZY 컬렉션 접근 → `LazyInitializationException`)
 - 이유: 교재 2-05는 답변 저장·조회 후 "세션이 종료되어 오류"를 겪고 `@Transactional`로 해결한다. 그 오류를 테스트로 재현해 왜 트랜잭션이 필요한지 남김(14163 25강). LAZY의 실제 동작(프록시 → 사용 시 조회)을 `Hibernate.isInitialized`로 확인(14163 22~24강)
 - 결과: 5개 통과, 전체 15개 통과
+
+### 005-01 도메인별 분류, 완료 패키지 구조 정리
+- 링크: [005-01](https://github.com/haroobuzii/jsb-upgrade/commit/005-01)
+- 작업: README에 `## 패키지 구조` 추가 (교재 2-06의 패키지와 이 프로젝트 패키지 대응)
+- 이유: 교재 2-06은 파일을 도메인별 패키지로 옮기는 절이다. 우리는 003부터 이미 `domain.<도메인>.<하위>.<계층>` 구조로 만들었으므로 옮길 파일이 없다. 대신 구조와 그렇게 나눈 이유를 문서로 남김. 샘플 데이터(`BaseInitData`)는 004-02로 앞당겼음
+- 결과: 코드 변경 없음, 테스트 15개 통과
+
