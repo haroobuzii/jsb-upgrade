@@ -8,6 +8,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.annotation.Order;
 import org.springframework.transaction.annotation.Transactional;
 
 // 앱이 시작되면 샘플 데이터를 만든다. (dev, test 모두)
@@ -25,6 +26,7 @@ public class BaseInitData {
     private final QuestionRepository questionRepository;
 
     @Bean
+    @Order(1) // DevInitData(2)보다 먼저: 빈 DB에서 기본 샘플(질문 1·2)이 먼저 들어가야 id가 1, 2로 고정된다
     ApplicationRunner baseInitDataApplicationRunner() {
         return args -> self.work1();
     }

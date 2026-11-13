@@ -322,3 +322,9 @@ com.mysite.sbb
 - 작업: `layout.html` `</body>` 앞에 cdnjs `bootstrap.bundle.min.js` 5.3.8
 - 이유: 교재 3-01 — 화면이 좁으면 메뉴가 햄버거 버튼으로 접히는데, 펼치는 동작은 Bootstrap JS가 한다. CSS와 같은 cdnjs 방식(14163 39강). Popper가 들어 있는 bundle로 이후 드롭다운도 대비
 - 결과: 폭 375px(모바일)에서 햄버거 버튼 클릭 → "로그인" 메뉴가 펼쳐짐. 테스트 25개 통과
+
+### 012-01 페이징, 시작 dev 전용 질문 300개
+- 링크: [012-01](https://github.com/haroobuzii/jsb-upgrade/commit/012-01)
+- 작업: `global/initData/DevInitData`(`@Profile("dev")`, `@Order(2)`, 300개 미만이면 "테스트 데이터입니다:[001]"~[300] 생성), `BaseInitData`에 `@Order(1)`
+- 이유: 교재 3-02는 페이징을 보려고 테스트 코드로 300개를 만든다(테스트가 개발 DB를 쓰므로 가능). 우리 테스트는 메모리 DB라 그 방법이 안 된다 → 결정 사항대로 InitData에서, 단 dev에만(test에 넣으면 질문 2개를 전제로 한 테스트가 깨짐, AI 판단). 빈 DB에서 기본 샘플이 먼저 들어가도록 순서 지정
+- 결과: 재시작 로그 `DevInitData.work1` 트랜잭션, 목록 303행(페이징 전이라 한 화면에 전부). 테스트 25개 통과(test 프로파일은 그대로 2개)
