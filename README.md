@@ -358,3 +358,9 @@ com.mysite.sbb
 - 작업: `spring-boot-starter-security`(+ `-security-test`), `global/security/SecurityConfig`(`SecurityFilterChain`: `/resource/**`·`/h2-console/**`·`/**` 허용, H2용 frame `sameOrigin`, H2 경로만 CSRF 제외). POST 테스트에 `.with(csrf())`
 - 이유: 교재 3-05. 의존성만 넣으면 모든 요청이 로그인 페이지로 막힌다(14168 46강 "디폴트 세팅"). 교재의 `new AntPathRequestMatcher(...)`는 Security 7에서 제거돼 문자열 패턴 사용(14168 방식)
 - 결과: 의존성만 넣었을 때 `/questions` → 브라우저 `/login`(Please sign in), curl 401, 로그에 임시 비밀번호. 설정 후 `/questions`·`/resource/style.css`·`/h2-console/` 200, `X-Frame-Options: SAMEORIGIN`. 토큰 없는 POST는 403, 브라우저 폼은 `th:action`이 넣은 `_csrf`로 정상 등록. 테스트 26개 통과
+
+### 013-02 시큐리티, 완료 CSRF 확인과 _csrf 메타 태그
+- 링크: [013-02](https://github.com/haroobuzii/jsb-upgrade/commit/013-02)
+- 작업: `layout.html`에 `<meta name="_csrf" th:content="${_csrf.token}">`. 테스트: 토큰 없는 POST → 403(t4), 질문 등록 폼에 hidden `_csrf` 포함
+- 이유: CSRF는 다른 사이트가 사용자 몰래 우리 사이트로 요청을 보내는 공격. Security는 우리 페이지가 준 토큰이 있는 요청만 받는다. 폼은 `th:action`이 토큰을 자동으로 넣고(14168 46강), JS로 만드는 요청(017 삭제 링크)은 메타 태그의 토큰을 쓴다(14168 layout)
+- 결과: 모든 페이지 `<head>`에 `_csrf` 메타. 테스트 27개 통과

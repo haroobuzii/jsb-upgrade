@@ -66,7 +66,9 @@ class QuestionControllerTest {
     void t4() {
         assertThat(mvc.get().uri("/questions/write"))
                 .hasStatusOk()
-                .hasViewName("question/question/write");
+                .hasViewName("question/question/write")
+                .bodyText()
+                .contains("name=\"_csrf\"");  // th:action 이 넣은 hidden 토큰
     }
 
     @Test

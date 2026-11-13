@@ -59,4 +59,11 @@ class AnswerControllerTest {
 
         assertThat(questionRepository.findById(2).get().getAnswers()).hasSize(before);
     }
+
+    @Test
+    @DisplayName("CSRF 토큰 없이 POST 하면 403 (Spring Security 기본 보호)")
+    void t4() {
+        assertThat(mvc.post().uri("/questions/2/answers").param("content", "토큰 없음"))
+                .hasStatus(HttpStatus.FORBIDDEN);
+    }
 }

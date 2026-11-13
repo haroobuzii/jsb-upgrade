@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--/* 각 페이지의 <title> 이 $CONTENT_TITLE, 여기의 SBB 가 $LAYOUT_TITLE → "질문 목록 | SBB" */-->
     <title layout:title-pattern="$CONTENT_TITLE | $LAYOUT_TITLE">SBB</title>
+    <!--/* CSRF 토큰: th:action 폼에는 자동으로 들어가지만, JS 로 만드는 요청(017의 삭제 링크 등)은 여기서 읽어 쓴다 */-->
+    <meta name="_csrf" th:content="${_csrf.token}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/css/bootstrap.min.css">
     <link rel="stylesheet" th:href="@{/resource/style.css}">
 </head>
