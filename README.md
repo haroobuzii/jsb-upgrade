@@ -268,3 +268,9 @@ com.mysite.sbb
 - 작업: `AnswerService.write(questionId, content)`(`@Transactional`, `question.addAnswer`), `AnswerController`(`POST /questions/{questionId}/answers`, `@RequestParam content`, 상세로 리다이렉트), 상세 화면에 답변 폼, `AnswerControllerTest` t1(생성·302)·t2(없는 질문 404)
 - 이유: 교재 2-12는 `POST /answer/create/{id}`, setter + `answerRepository.save`. 14163 37강은 `question.addAnswer`로 save 없이 생성하고 `POST /questions/5/answers`를 좋은 URL로 든다. 결정 사항대로 트랜잭션은 서비스에(14163은 컨트롤러에 `@Transactional`)
 - 결과: 브라우저에서 1번 질문에 답변 등록 → 상세로 돌아와 "1개의 답변" 표시. 테스트 21개 통과
+
+### 009-01 디자인, 시작 style.css
+- 링크: [009-01](https://github.com/haroobuzii/jsb-upgrade/commit/009-01)
+- 작업: `static/resource/style.css`(textarea 너비 100%, 제출 버튼 위 여백), 상세 화면에 `<link th:href="@{/resource/style.css}">`
+- 이유: 교재 2-13 — CSS 같은 정적 파일은 `static` 폴더에 두면 그 안의 경로가 그대로 URL이 된다. 결정 사항대로 정적 파일은 `/resource/**` 아래에 모음(14168 `static/resource/`, 나중에 Security에서 한 줄로 허용하기 쉬움)
+- 결과: `/resource/style.css` 200 `text/css`, 답변 입력칸이 화면 너비로 넓어짐. 정적 파일은 classpath에서 제공되므로 템플릿과 달리 재빌드 후 반영. 테스트 21개 통과

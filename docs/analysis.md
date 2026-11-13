@@ -112,7 +112,7 @@
 | 항목 | 결정 |
 |---|---|
 | Bootstrap | cdnjs 5.3.8 + Pretendard 폰트 |
-| 레이아웃 | `thymeleaf-layout-dialect`, `layout:title-pattern`, `global.js`, `<meta name="_csrf">` |
+| 레이아웃 | `thymeleaf-layout-dialect`, `layout:title-pattern`(009). `global.js`는 14168에서 `_method` DELETE 링크 처리용이므로 필요해지는 017에서, `<meta name="_csrf">`는 Security를 넣는 013에서 추가 `(AI 판단)` |
 | 폼 | 컨트롤러 안 `record` 폼 DTO, `@ModelAttribute("form") @Valid` + `BindingResult`, `form_errors` 조각, `01-필드-` 접두어 정렬, 첫 오류 필드 포커스 |
 | 클라이언트 검증 | `onsubmit` JS 검증 추가, 서버 검증이 진짜 방어선임을 테스트로 확인 |
 | 정적 파일 | `/resource/**` 아래에 모음 |
