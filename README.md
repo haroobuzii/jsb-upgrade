@@ -334,3 +334,9 @@ com.mysite.sbb
 - 작업: `QuestionService.getList(page)` → `PageRequest.of(page, 10, 작성일시 내림차순)`, `findAll(Pageable)`이 `Page<Question>` 반환. 컨트롤러 `?page=`(기본 0) → 모델 `paging`. 템플릿에 이전·번호(현재 ±5)·다음 버튼. `QuestionServiceTest` t1
 - 이유: 교재 3-02. 교재는 리포지터리에 `findAll(Pageable)`을 다시 선언하지만 `JpaRepository`에 이미 있어 생략. 페이지 번호는 URL에선 0부터(스프링 규칙), 화면에는 1부터 보이게 `page + 1`(AI 판단, 교재는 0부터 표시)
 - 결과: `/questions?page=3` → [270]~[261] 10개, 4번 버튼 활성. SQL에 `offset ... rows fetch first ? rows only`와 `count(q1_0.id)` 두 쿼리. 테스트 26개 통과
+
+### 012-03 페이징, 게시물 번호
+- 링크: [012-03](https://github.com/haroobuzii/jsb-upgrade/commit/012-03)
+- 작업: 번호 = `paging.totalElements - (paging.number * paging.size) - loop.index`
+- 이유: 교재 3-03 — `loop.count`는 페이지마다 1부터 다시 시작한다. 전체 개수에서 앞 페이지들과 현재 순번을 빼면 최신 글이 가장 큰 번호이고 페이지가 넘어가도 번호가 이어진다
+- 결과: 0페이지 303~294, 1페이지 293~284, 마지막(30) 페이지 3~1. 테스트 26개 통과
