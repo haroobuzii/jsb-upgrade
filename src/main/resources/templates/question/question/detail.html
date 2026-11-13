@@ -18,5 +18,11 @@
     </li>
 </ul>
 
+<!--/* 답변 등록: POST /questions/{id}/answers, textarea 의 name="content" 가 @RequestParam content 로 전달 */-->
+<form th:action="@{|/questions/${question.id}/answers|}" method="post">
+    <textarea name="content" rows="5"></textarea>
+    <input type="submit" value="답변등록">
+</form>
+
 </body>
 </html>

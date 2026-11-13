@@ -262,3 +262,9 @@ com.mysite.sbb
 - 작업: 상세 템플릿에 `#lists.size(question.answers)`개의 답변, `th:each`로 답변 내용·작성일시. 컨트롤러 테스트 t2에 답변 확인 추가
 - 이유: 교재 2-12. 이때 템플릿이 LAZY 컬렉션 `question.answers`를 읽는데, 서비스 트랜잭션은 이미 끝난 뒤다. 그래도 동작하는 이유가 OSIV(Open Session In View, 기본 켜짐: 요청이 끝날 때까지 영속성 컨텍스트를 열어 둠)
 - 결과: 답변 2개 표시. `spring.jpa.open-in-view: false`로 잠시 바꾸자 같은 화면이 500(`LazyInitializationException`) → 원래대로 되돌림. 테스트 19개 통과
+
+### 008-02 답변, 완료 답변 등록 POST /questions/{id}/answers
+- 링크: [008-02](https://github.com/haroobuzii/jsb-upgrade/commit/008-02)
+- 작업: `AnswerService.write(questionId, content)`(`@Transactional`, `question.addAnswer`), `AnswerController`(`POST /questions/{questionId}/answers`, `@RequestParam content`, 상세로 리다이렉트), 상세 화면에 답변 폼, `AnswerControllerTest` t1(생성·302)·t2(없는 질문 404)
+- 이유: 교재 2-12는 `POST /answer/create/{id}`, setter + `answerRepository.save`. 14163 37강은 `question.addAnswer`로 save 없이 생성하고 `POST /questions/5/answers`를 좋은 URL로 든다. 결정 사항대로 트랜잭션은 서비스에(14163은 컨트롤러에 `@Transactional`)
+- 결과: 브라우저에서 1번 질문에 답변 등록 → 상세로 돌아와 "1개의 답변" 표시. 테스트 21개 통과
