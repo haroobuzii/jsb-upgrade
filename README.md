@@ -478,3 +478,10 @@ com.mysite.sbb
 - 작업: `QuestionRepository`에 `JpaSpecificationExecutor`, `QuestionService.search(kw)`(JPA Criteria: 질문 글쓴이·답변·답변 글쓴이 LEFT JOIN, `distinct`, 제목·내용·글쓴이·답변 내용·답변 글쓴이 중 하나라도 `like %kw%`), `getList(page, kw)`, 목록 위에 검색 폼(GET `kw`), 페이지 링크에 `kw` 유지, `QuestionServiceTest` t2
 - 이유: 교재 3-13 1단계(Specification). 교재는 검색어·페이지를 JS로 숨은 폼에 넣어 보낸다. Thymeleaf `@{/questions(page=..., kw=...)}`는 검색어를 URL 인코딩해 링크에 붙여 주므로 JS 없이 GET 폼 + 링크로 처리(AI 판단)
 - 결과: "데이터입니다:[2" 검색 → 100건, 번호 100부터, 다음 페이지 링크 `?page=1&kw=...`. 답변 2개 달린 질문도 1건(distinct). 테스트 52개 통과
+
+### 021-02 검색, 완료 JPQL(@Query)로 전환 — 미션 1 완료
+- 링크: [021-02](https://github.com/haroobuzii/jsb-upgrade/commit/021-02)
+- 작업: `QuestionRepository.findAllByKeyword(kw, pageable)`(`@Query` JPQL: `select distinct q from Question q left join q.author ... where ... like %:kw%`), 서비스는 이것을 사용, Specification 코드와 `JpaSpecificationExecutor` 제거
+- 이유: 교재 3-13 2단계 — 같은 검색을 JPQL로 쓰면 SQL과 비슷해 한눈에 읽힌다. 엔티티 연관 필드로 조인(`left join q.answers a`)하므로 `on` 조건을 따로 쓰지 않는다(교재는 `on q.author=u1`). 결정 사항대로 QueryDSL은 제외
+- 결과: 테스트 52개 그대로 통과(같은 동작). `kw=맞습니다` → 2번 질문, `kw=user2` → user2가 쓰거나 답변한 질문 3건
+- **교재 2-02~3-13(로드맵 001~021) 구현 완료. 다음은 미션 2(도전과제 3-14)**
