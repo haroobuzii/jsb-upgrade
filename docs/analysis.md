@@ -68,13 +68,13 @@
 | 스택 | Spring Boot 4.1.2, Java 25, Gradle Kotlin DSL |
 | 범위 | 교재 2~3장 + 도전과제 9개, 4장(배포) 제외 |
 | 강사 개선이 없는 구간 | 2-15·3장은 14168 방식을 이어서 적용, 나머지는 교재대로 하되 원칙(`@Setter` 금지, LAZY 등) 유지 |
-| 승인 단위 | 커밋 1개 = 승인 1회. 설명 → 승인 → 구현 → 코드 설명 → 실행(내장 브라우저) → 테스트 → README → 커밋 → push |
+| 승인 단위 | ~002: 커밋 1개 = 승인 1회. **003부터(2026-11-13 변경): 미션 1(001~021)은 AI가 승인 없이 먼저 끝까지 구현하고, 사용자에게는 나중에 설명한다.** 커밋 단위·자료 확인·테스트·브라우저 확인·README 기록은 그대로. 사용자에게 물을 결정은 추천안으로 정하고 이 문서에 `(AI 판단)`으로 표시. 미션 1이 끝나면 멈추고 "미션 1 완료, 이제 미션 2 차례"라고 알린다 |
 | 비교 자료 | 작업 시작 시 교재 본문 / sbb3 태그 diff / 강사 태그 diff를 함께 제시, 커밋 `참고:`에 태그 기록 |
 | IDE | 사용자는 IntelliJ로 코드를 보고, 실행·테스트는 Gradle |
 | 커밋 제목 | `NNN-NN 기능명, 세부작업`, 첫 커밋 `시작`, 마지막 커밋 `완료` |
 | 커밋 본문 | `작업 내용` / `작업 이유` / `참고` / `검증` (한국어) |
-| README | 커밋마다 `## 작업내역`에 한 항목. 링크는 다음 커밋에서 직전 항목에 채움 |
-| 저장소 | https://github.com/haroobuzii/jsb-upgrade (public), `main` 직접 커밋, 기능 완료 시 태그(`000`, `001`, …) |
+| README | 커밋마다 `## 작업내역`에 한 항목. 링크는 커밋 번호 태그 주소(`/commit/003-01`)라 같은 커밋에서 바로 적는다 (002-03까지는 해시 링크를 다음 커밋에서 채웠음) |
+| 저장소 | https://github.com/haroobuzii/jsb-upgrade (public), `main` 직접 커밋. 태그: **모든 커밋에 커밋 번호 태그**(`003-01`) + 기능 완료 시 기능 번호 태그(`003`). `https://github.com/haroobuzii/jsb-upgrade/commit/003-01`처럼 번호로 바로 열림 |
 
 ### 설정
 | 항목 | 결정 |
@@ -86,17 +86,17 @@
 ### 구조와 URL
 | 항목 | 결정 |
 |---|---|
-| 패키지 | `com.mysite.sbb.domain.<도메인>.<하위>.{controller,entity,repository,service}`, `com.mysite.sbb.global.{jpa,initData,security,exception}` |
+| 패키지 | `com.mysite.sbb.domain.<도메인>.<하위>.{controller,entity,repository,service}`, `com.mysite.sbb.global.{jpa,initData,security,exception}`. 003(2-04)부터 이 구조로 바로 만들고, 005(2-06)에서는 교재의 파일 이동을 설명만 한다 (2026-11-13 결정) |
 | URL | 복수형 리소스 + HTTP 메서드로 구분 (`/questions`, `/questions/{id}`, `/questions/write` GET/POST, `/questions/{id}/modify` GET/PUT, `/questions/{id}/answers` POST). 2-11에서 전환 |
 | HTTP 메서드 | 수정 `_method=PUT`, 삭제 `_method=DELETE`, 추천·로그아웃 POST |
 
 ### 엔티티와 JPA
 | 항목 | 결정 |
 |---|---|
-| `BaseEntity` | 2-04부터. `@MappedSuperclass`, `id`, `createDate`/`modifyDate`(Auditing), id 기준 `equals/hashCode` |
+| `BaseEntity` | 2-04부터. `@MappedSuperclass`, `id`, `createDate`/`modifyDate`(Auditing). id 기준 `equals/hashCode`는 **필요해지는 시점(컬렉션에서 자식 삭제: 017 또는 023)에 실패를 먼저 보이고 추가** (14168 37강 방식, 2026-11-13 변경) |
 | id 타입 | `int` (강사 방식). `Integer/Long` 관례와의 차이는 도입 시 설명 |
-| 변경 방식 | 엔티티 `@Setter` 금지, `modify()`·`addAnswer()` 같은 의미 있는 메서드로만 변경 |
-| 연관관계 | 모든 `@ManyToOne`에 `fetch = LAZY`, `@OneToMany(cascade = {PERSIST, REMOVE}, orphanRemoval = true)` |
+| 변경 방식 | 엔티티 `@Setter` 금지, `modify()`·`addAnswer()` 같은 의미 있는 메서드로만 변경. 기본 생성자는 `@NoArgsConstructor(access = PROTECTED)` (14168은 public, JPA에는 protected로 충분하고 빈 엔티티 생성을 막음, 2026-11-13 결정) |
+| 연관관계 | 모든 `@ManyToOne`에 `fetch = LAZY`, `@OneToMany(cascade = {PERSIST, REMOVE}, orphanRemoval = true)`. 컬렉션 필드 이름은 강사 방식 `answers`(교재 `answerList`), `new ArrayList<>()`로 초기화 |
 | 서비스·트랜잭션 | Service 계층 유지, `@Transactional`은 Service에. 답변 생성은 Service 안에서 `question.addAnswer()` |
 | 조회 실패 | 리포지터리 `Optional` 반환 → 서비스에서 `orElseThrow(DataNotFoundException)` → 404 |
 | OSIV | 기본값(켜짐) 유지, 처음 나올 때 설명하고 끈 결과도 한 번 보여줌 |
