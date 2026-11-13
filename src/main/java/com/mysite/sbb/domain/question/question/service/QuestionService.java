@@ -21,4 +21,11 @@ public class QuestionService {
     public List<Question> getList() {
         return questionRepository.findAll();
     }
+
+    // 1단계: Optional.get() — 없는 id면 NoSuchElementException(500, "No value present")
+    // 다음 커밋들에서 404로 바꾼다.
+    @Transactional(readOnly = true)
+    public Question getQuestion(int id) {
+        return questionRepository.findById(id).get();
+    }
 }

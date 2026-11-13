@@ -226,3 +226,9 @@ com.mysite.sbb
 - 작업: `QuestionService.getList()`(`@Transactional(readOnly = true)`), 컨트롤러가 리포지터리 대신 서비스 사용
 - 이유: 교재 2-09 — 여러 컨트롤러가 쓰는 처리를 모듈화하고, 컨트롤러는 요청·응답만 담당. 결정 사항대로 트랜잭션 경계는 서비스에 두고 조회는 `readOnly`. 교재가 권장하는 DTO는 교재·강사 모두 만들지 않으므로 엔티티를 템플릿에 그대로 넘김
 - 결과: 로그 `Getting transaction for [...QuestionService.getList]` → select → `Completing transaction`. 목록 화면 동일, 테스트 17개 통과
+
+### 007-01 상세, 시작 질문 상세 화면
+- 링크: [007-01](https://github.com/haroobuzii/jsb-upgrade/commit/007-01)
+- 작업: `GET /question/detail/{id}`(`@PathVariable`), `QuestionService.getQuestion(id)`(우선 `findById(id).get()`), `templates/question/question/detail.html`, 컨트롤러 테스트 t2
+- 이유: 교재 2-10. 14163 35강처럼 3단계(상세 표시 → 목록에서 링크 → 없는 질문 404)로 나눠 진행. 1단계에서는 없는 id 처리 없이 `get()`만 써서 문제를 먼저 본다
+- 결과: `/question/detail/2` 제목·내용 표시. `/question/detail/999`는 500(`No value present`) — 다음 단계에서 404로 개선

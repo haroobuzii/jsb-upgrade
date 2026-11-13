@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -24,5 +25,14 @@ public class QuestionController {
 
         // @ResponseBody 가 없으므로 뷰 이름 → templates/question/question/list.html
         return "question/question/list";
+    }
+
+    // {id}: URL 경로의 일부를 변수로 받는다. /question/detail/2 → id = 2
+    @GetMapping("/question/detail/{id}")
+    public String detail(@PathVariable int id, Model model) {
+        Question question = questionService.getQuestion(id);
+        model.addAttribute("question", question);
+
+        return "question/question/detail";
     }
 }

@@ -28,4 +28,14 @@ class QuestionControllerTest {
                 .bodyText()
                 .contains("sbb가 무엇인가요?", "스프링부트 모델 질문입니다.");
     }
+
+    @Test
+    @DisplayName("GET /question/detail/2 : 질문 제목과 내용이 보인다")
+    void t2() {
+        assertThat(mvc.get().uri("/question/detail/2"))
+                .hasStatusOk()
+                .hasViewName("question/question/detail")
+                .bodyText()
+                .contains("스프링부트 모델 질문입니다.", "id는 자동으로 생성되나요?");
+    }
 }
