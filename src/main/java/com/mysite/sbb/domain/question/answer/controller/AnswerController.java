@@ -99,4 +99,13 @@ public class AnswerController {
 
         return "redirect:/questions/" + questionId;
     }
+
+    // 답변 추천: POST /questions/{questionId}/answers/{id}/vote
+    @PostMapping("/{id}/vote")
+    @PreAuthorize("isAuthenticated()")
+    public String vote(@PathVariable int questionId, @PathVariable int id, Principal principal) {
+        answerService.vote(questionId, id, userService.getUser(principal.getName()));
+
+        return "redirect:/questions/" + questionId;
+    }
 }

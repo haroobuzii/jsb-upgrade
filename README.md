@@ -448,3 +448,9 @@ com.mysite.sbb
 - 작업: `Question.voters`(`@ManyToMany Set<SiteUser>`, 연결 테이블 `question_voters`), `Question.vote`, `QuestionService.vote`, `POST /questions/{id}/vote`, 상세에 추천 버튼과 개수 배지(`<a method="POST">` → global.js), 테스트 t13
 - 이유: 교재 3-10. 결정 사항대로 GET 대신 POST(상태 변경, CSRF 보호). `Set`이라 같은 사람이 여러 번 눌러도 1표
 - 결과: `create table question_voters (question_id, voters_id, primary key(...))`. 브라우저에서 305번 추천 → 배지 0 → 1. 테스트: 두 번 눌러도 user1·user2 2표, 비로그인은 로그인 화면. 47개 통과
+
+### 018-02 추천, 완료 답변 추천(POST)
+- 링크: [018-02](https://github.com/haroobuzii/jsb-upgrade/commit/018-02)
+- 작업: `Answer.voters`(`@ManyToMany Set<SiteUser>`, `answer_voters`), `Answer.vote`, `AnswerService.vote`, `POST /questions/{questionId}/answers/{id}/vote`, 상세의 답변마다 추천 버튼·개수, 테스트 t9
+- 이유: 교재 3-10 답변 추천을 질문 추천과 같은 방식(POST, Set)으로
+- 결과: 브라우저에서 1번 질문의 답변 추천 0 → 1. 테스트 48개 통과

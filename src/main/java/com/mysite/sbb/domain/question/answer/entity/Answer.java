@@ -5,9 +5,13 @@ import com.mysite.sbb.domain.user.user.entity.SiteUser;
 import com.mysite.sbb.global.jpa.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import static jakarta.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PROTECTED;
@@ -28,6 +32,10 @@ public class Answer extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    // 추천한 회원들 → 연결 테이블 answer_voters
+    @ManyToMany
+    private final Set<SiteUser> voters = new HashSet<>();
+
     public Answer(Question question, SiteUser author, String content) {
         this.question = question;
         this.author = author;
@@ -40,5 +48,9 @@ public class Answer extends BaseEntity {
 
     public void modify(String content) {
         this.content = content;
+    }
+
+    public void vote(SiteUser voter) {
+        voters.add(voter);
     }
 }

@@ -125,4 +125,14 @@ class AnswerControllerTest {
         assertThat(answerRepository.findById(2)).isEmpty();
         assertThat(questionRepository.findById(2)).isPresent(); // 질문은 그대로
     }
+
+    @Test
+    @DisplayName("답변 추천: POST /questions/2/answers/1/vote, 같은 사람은 1표")
+    void t9() {
+        assertThat(mvc.post().uri("/questions/2/answers/1/vote").with(user("user2")).with(csrf()))
+                .hasStatus(HttpStatus.FOUND).hasRedirectedUrl("/questions/2");
+        mvc.post().uri("/questions/2/answers/1/vote").with(user("user2")).with(csrf()).exchange();
+
+        assertThat(answerRepository.findById(1).get().getVoters()).extracting("username").containsExactly("user2");
+    }
 }
