@@ -77,7 +77,13 @@
 - 결과: 결정 사항 28개 확정, 로드맵 000~030 확정
 
 ### 001-01 hello 컨트롤러, 시작 void 액션 메서드
-- 링크: (다음 커밋에서 추가)
+- 링크: [f4305a4](https://github.com/haroobuzii/jsb-upgrade/commit/f4305a4)
 - 작업: `MainController`에 `@GetMapping("/sbb")`가 붙은 `void index()` 추가 (콘솔에 `index() 메서드 호출됨!` 출력만 함)
 - 이유: "URL 매핑은 됐는데 응답을 정하지 않은 상태"를 먼저 겪어 보고, 다음 커밋에서 `@ResponseBody`가 왜 필요한지 이해하기 위함 (교재 2-02, 14163 3강 흐름)
 - 결과: `/sbb` 응답이 404 → 500(`Circular view path [sbb]`)으로 바뀜. 서버 콘솔에는 `index() 메서드 호출됨!` 출력 → 메서드는 실행됐지만 응답 생성에서 실패
+
+### 001-02 hello 컨트롤러, @ResponseBody로 문자열 응답
+- 링크: (다음 커밋에서 추가)
+- 작업: `index()`의 반환형을 `String`으로 바꾸고 `@ResponseBody` 추가, `"안녕하세요 sbb에 오신 것을 환영합니다."` 반환
+- 이유: `@ResponseBody`가 없으면 반환값(또는 URL)을 뷰 이름으로 해석한다. `@ResponseBody`를 붙이면 반환값이 응답 본문 그 자체가 되어 뷰를 찾지 않음 (교재 2-02, 14163 4강)
+- 결과: `/sbb` 응답이 500 → 200, `Content-Type: text/plain;charset=UTF-8`, 브라우저에 환영 문자열 출력
