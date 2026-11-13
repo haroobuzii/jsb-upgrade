@@ -110,4 +110,14 @@ class QuestionControllerTest {
                 .hasStatus(HttpStatus.FOUND)
                 .redirectedUrl().endsWith("/users/login");
     }
+
+    @Test
+    @DisplayName("상세 답변 입력칸: 비로그인은 비활성화 + 로그인 링크, 로그인하면 입력 가능")
+    void t8() {
+        assertThat(mvc.get().uri("/questions/2"))
+                .bodyText().contains("로그인 후 답변을 작성할 수 있습니다.", "로그인하고 답변하기").doesNotContain("답변등록");
+
+        assertThat(mvc.get().uri("/questions/2").with(user("user1")))
+                .bodyText().contains("답변등록").doesNotContain("로그인하고 답변하기");
+    }
 }

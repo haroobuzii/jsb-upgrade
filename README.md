@@ -406,3 +406,9 @@ com.mysite.sbb
 - 작업: `@EnableMethodSecurity`, 질문 등록(GET·POST)·답변 등록에 `@PreAuthorize("isAuthenticated()")`, `Principal.getName()` → `UserService.getUser` → 글쓴이로 저장. 테스트는 `.with(user("user1"))`, 비로그인 리다이렉트 테스트 추가
 - 이유: 교재 3-08 — 글쓴이를 남기려면 로그인한 사람만 글을 써야 한다. 로그인 안 한 요청은 Security가 로그인 화면으로 보내고, 로그인 후 원래 요청으로 돌려보낸다
 - 결과: 비로그인으로 `/questions/write` → `/users/login` → user2 로그인 → `/questions/write?continue`로 복귀 → 등록한 304번 질문 글쓴이 user2. 테스트 38개 통과
+
+### 016-03 글쓴이, 완료 비로그인 답변 입력 제한과 글쓴이 N+1 확인
+- 링크: [016-03](https://github.com/haroobuzii/jsb-upgrade/commit/016-03)
+- 작업: 상세의 답변 폼 — 비로그인은 비활성화된 입력칸(“로그인 후 답변을 작성할 수 있습니다.”)과 "로그인하고 답변하기" 링크, 로그인하면 입력칸과 "답변등록". 테스트 t8
+- 이유: 교재 3-08은 비로그인에게 `disabled` 입력칸을 보여 준다. 눌러 봐야 로그인 화면으로 튕기는 버튼 대신 로그인 링크를 보여 줌(AI 판단). 목록의 글쓴이(LAZY 프록시)도 012-05 batch fetch로 묶이는지 확인
+- 결과: 비로그인 HTML에 `disabled` 입력칸과 로그인 링크. 목록 0페이지 SQL 4번(목록, count, 답변 IN, `site_user` IN) — 글쓴이 10명을 따로 조회하지 않음. 테스트 39개 통과
