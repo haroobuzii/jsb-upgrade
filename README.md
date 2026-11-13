@@ -125,3 +125,9 @@
 - 작업: `domain/question/question/entity/Question extends BaseEntity`. `subject`(`@Column(length = 200)`), `content`(`columnDefinition = "TEXT"`), `@Getter`, `@NoArgsConstructor(access = PROTECTED)`, 생성자 `Question(subject, content)`. `@Setter` 없음
 - 이유: 교재도 "엔티티에는 Setter를 쓰지 않기를 권한다(이 책은 설명 편의상 사용)"고 한다. 14168처럼 생성자로만 값을 넣어 엔티티가 아무 데서나 바뀌지 않게 함. 기본 생성자는 JPA용으로만 열어 둠(PROTECTED)
 - 결과: 재시작 로그에 `create table question (id, create_date, modify_date, content TEXT, subject varchar(200))` → BaseEntity 칼럼 상속, `createDate` → `create_date`(snake_case) 확인. H2 콘솔에 `QUESTION` 테이블 표시
+
+### 003-03 엔티티, Answer와 @ManyToOne(LAZY)
+- 링크: [003-03](https://github.com/haroobuzii/jsb-upgrade/commit/003-03)
+- 작업: `domain/question/answer/entity/Answer extends BaseEntity`. `@ManyToOne(fetch = LAZY) Question question`, `content`(TEXT), 생성자 `Answer(question, content)`
+- 이유: 답변 여러 개(N)가 질문 하나(1)에 속하므로 `@ManyToOne`. 기본값 EAGER는 답변을 조회할 때마다 질문까지 즉시 조회하므로 14163·14168처럼 LAZY로 지정 (차이는 004에서 SQL로 확인)
+- 결과: `create table answer (..., question_id integer, ...)`와 `alter table answer add constraint FK... foreign key (question_id) references question` → `@ManyToOne`이 외래키 칼럼과 제약을 만든다는 것 확인 (14163 7강)
