@@ -304,3 +304,9 @@ com.mysite.sbb
 - 작업: `AnswerController` 안 `record WriteForm(@NotBlank content)`, `@ModelAttribute("form") @Valid` + `BindingResult`, 실패 시 질문을 다시 담아 상세 화면 반환. 상세 GET에 빈 답변 폼(`form`), 상세의 답변 폼에 `th:object`·`th:field`·오류 조각. 테스트 t3
 - 이유: 교재 2-16의 `AnswerForm`과 같은 목적(빈 답변 저장 방지)을 질문 폼과 같은 방식으로
 - 결과: 공백 답변 POST → 200 상세 화면 + "내용을 입력해주세요.", 답변 수 그대로. 테스트 25개 통과
+
+### 010-04 질문 등록, 완료 클라이언트(JS) 검증
+- 링크: [010-04](https://github.com/haroobuzii/jsb-upgrade/commit/010-04)
+- 작업: 질문 등록·답변 폼에 `onsubmit="...(this); return false;"` + 검증 함수(앞뒤 공백 제거, 비었으면 알림·포커스 후 중단, 통과하면 `form.submit()`)
+- 이유: 14168 35~36강 — 서버 검증은 무조건, 클라이언트 검증은 빠른 피드백용. 브라우저 개발자 도구에서 JavaScript를 끄면 우회되므로 서버 검증이 진짜 방어선
+- 결과: 브라우저에서 빈 제목 → 전송 안 됨·제목 포커스, 빈 내용 → 내용 포커스, 모두 채우면 전송. JS를 거치지 않는 MockMvc 테스트(t6, t3)가 서버 검증을 계속 확인. 테스트 25개 통과

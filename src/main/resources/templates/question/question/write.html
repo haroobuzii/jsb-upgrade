@@ -6,7 +6,8 @@
     <h5 class="my-3 border-bottom pb-2">질문 등록</h5>
     <!--/* th:action 만 쓰면 현재 주소(/questions/write)로 전송 (14168 26강)
          th:object="${form}": 이 폼의 대상 객체. 안에서 *{필드} 로 접근 */-->
-    <form th:action method="post" th:object="${form}">
+    <!--/* onsubmit: 전송 전에 브라우저에서 먼저 검사. return false 로 기본 전송을 막고, 통과하면 함수 안에서 form.submit() */-->
+    <form th:action method="post" th:object="${form}" onsubmit="Question__submitWriteForm(this); return false;">
         <div th:replace="~{form_errors :: formErrorsFragment}"></div>
         <div class="mb-3">
             <label for="subject" class="form-label">제목</label>
@@ -19,5 +20,27 @@
         </div>
         <input type="submit" value="저장하기" class="btn btn-primary my-2">
     </form>
+
+    <script>
+        // 클라이언트 검증: 빠른 피드백용. 진짜 방어선은 서버 검증(@Valid)이다 (14168 35~36강)
+        function Question__submitWriteForm(form) {
+            form.subject.value = form.subject.value.trim();
+            form.content.value = form.content.value.trim();
+
+            if (form.subject.value.length === 0) {
+                alert("제목을 입력해주세요.");
+                form.subject.focus();
+                return;
+            }
+
+            if (form.content.value.length === 0) {
+                alert("내용을 입력해주세요.");
+                form.content.focus();
+                return;
+            }
+
+            form.submit();
+        }
+    </script>
 </div>
 </html>

@@ -31,10 +31,26 @@
     </div>
 
     <!--/* 답변 등록: POST /questions/{id}/answers, textarea 의 name="content" 가 @RequestParam content 로 전달 */-->
-    <form th:action="@{|/questions/${question.id}/answers|}" method="post" class="my-3" th:object="${form}">
+    <form th:action="@{|/questions/${question.id}/answers|}" method="post" class="my-3" th:object="${form}"
+          onsubmit="Answer__submitWriteForm(this); return false;">
         <div th:replace="~{form_errors :: formErrorsFragment}"></div>
         <textarea th:field="*{content}" rows="10" class="form-control"></textarea>
         <input type="submit" value="답변등록" class="btn btn-primary my-2">
     </form>
+
+    <script>
+        // 클라이언트 검증: 빠른 피드백용. 진짜 방어선은 서버 검증(@Valid)이다 (14168 35~36강)
+        function Answer__submitWriteForm(form) {
+            form.content.value = form.content.value.trim();
+
+            if (form.content.value.length === 0) {
+                alert("내용을 입력해주세요.");
+                form.content.focus();
+                return;
+            }
+
+            form.submit();
+        }
+    </script>
 </div>
 </html>
