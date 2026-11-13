@@ -119,3 +119,9 @@
 - 작업: `global/jpa/entity/BaseEntity`(`@MappedSuperclass`, `int id` IDENTITY, `@CreatedDate createDate`, `@LastModifiedDate modifyDate`, `@EntityListeners(AuditingEntityListener)`), `SbbApplication`에 `@EnableJpaAuditing`. 진행 방식 변경(미션 1은 AI가 먼저 구현 후 설명)과 커밋 번호 태그 규칙을 문서에 반영, 기존 링크를 태그 주소로 변경, 003 결정 4개 기록
 - 이유: 교재는 엔티티마다 `id`, `createDate`를 쓰고 작성일을 직접 넣는다. 14168처럼 공통 필드를 부모 클래스로 모으고 작성·수정 일시는 JPA Auditing이 자동으로 채우게 함
 - 결과: 앱 재시작 시 `create table` 없음 → `@MappedSuperclass`는 테이블이 아님을 확인, 테스트 통과
+
+### 003-02 엔티티, Question
+- 링크: [003-02](https://github.com/haroobuzii/jsb-upgrade/commit/003-02)
+- 작업: `domain/question/question/entity/Question extends BaseEntity`. `subject`(`@Column(length = 200)`), `content`(`columnDefinition = "TEXT"`), `@Getter`, `@NoArgsConstructor(access = PROTECTED)`, 생성자 `Question(subject, content)`. `@Setter` 없음
+- 이유: 교재도 "엔티티에는 Setter를 쓰지 않기를 권한다(이 책은 설명 편의상 사용)"고 한다. 14168처럼 생성자로만 값을 넣어 엔티티가 아무 데서나 바뀌지 않게 함. 기본 생성자는 JPA용으로만 열어 둠(PROTECTED)
+- 결과: 재시작 로그에 `create table question (id, create_date, modify_date, content TEXT, subject varchar(200))` → BaseEntity 칼럼 상속, `createDate` → `create_date`(snake_case) 확인. H2 콘솔에 `QUESTION` 테이블 표시
