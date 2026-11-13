@@ -60,4 +60,10 @@ public class UserController {
 
         return "redirect:/";
     }
+
+    // 로그인 화면만 보여 준다. POST /users/login 처리는 Spring Security 가 한다 (SecurityConfig.formLogin)
+    @GetMapping("/login")
+    public String showLogin() {
+        return "user/user/login";
+    }
 }

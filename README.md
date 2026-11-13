@@ -382,3 +382,9 @@ com.mysite.sbb
 - 작업: `UserController`(`GET/POST /users/signup`, `record SignupForm`: 아이디 3~25자, 비밀번호·확인, 이메일 형식), 비밀번호 일치 확인(`rejectValue("password2", ...)`), `ServiceException` → 해당 칸 오류, `user/user/signup.html`, 내비게이션 바에 "회원가입", `UserControllerTest` t1~t3
 - 이유: 교재 3-06. URL은 질문과 같이 복수형 `/users/signup`(교재 `/user/signup`, AI 판단). 폼은 010과 같은 14168 방식(record, `@ModelAttribute("form")`, 정렬·포커스되는 오류)
 - 결과: 브라우저에서 잘못된 이메일 → "이메일 형식이 올바르지 않습니다."(비밀번호 칸은 다시 채워지지 않음). 테스트: 가입 성공 302 `/`, 비밀번호 불일치·중복 아이디는 폼으로. 32개 통과
+
+### 015-01 로그인, 시작 폼 로그인
+- 링크: [015-01](https://github.com/haroobuzii/jsb-upgrade/commit/015-01)
+- 작업: `UserSecurityService implements UserDetailsService`(아이디로 회원 조회 → 암호화된 비밀번호·`ROLE_USER`), `SecurityConfig.formLogin`(`loginPage("/users/login")`, 성공 시 `/`), `GET /users/login` 화면, 내비게이션 바 로그인 링크, `BaseInitData.work2`에 샘플 회원 user1·user2(로컬 개발·테스트 전용), 테스트 t4(성공·인증됨)·t5(실패 `?error`)
+- 이유: 교재 3-07. 로그인 POST 처리(비밀번호 비교, 세션 생성)는 Security가 하고 우리는 "아이디로 회원을 찾는 법"(`UserDetailsService`)만 알려 준다. 교재의 `AuthenticationManager` 빈과 `UserRole`(admin 구분)은 미션 1에서 쓰지 않아 생략(AI 판단)
+- 결과: 틀린 비밀번호 → `/users/login?error` "아이디 또는 비밀번호를 확인해 주세요." 맞으면 `/`로 이동. 테스트 34개 통과

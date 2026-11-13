@@ -2,6 +2,8 @@ package com.mysite.sbb.global.initData;
 
 import com.mysite.sbb.domain.question.question.entity.Question;
 import com.mysite.sbb.domain.question.question.repository.QuestionRepository;
+import com.mysite.sbb.domain.user.user.repository.UserRepository;
+import com.mysite.sbb.domain.user.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
@@ -24,11 +26,16 @@ public class BaseInitData {
     private BaseInitData self;
 
     private final QuestionRepository questionRepository;
+    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Bean
     @Order(1) // DevInitData(2)보다 먼저: 빈 DB에서 기본 샘플(질문 1·2)이 먼저 들어가야 id가 1, 2로 고정된다
     ApplicationRunner baseInitDataApplicationRunner() {
-        return args -> self.work1();
+        return args -> {
+            self.work1();
+            self.work2();
+        };
     }
 
     @Transactional
@@ -41,5 +48,15 @@ public class BaseInitData {
         // save 를 다시 부르지 않아도 된다. 트랜잭션이 끝날 때 더티체킹 + cascade PERSIST 로 INSERT
         q2.addAnswer("네 자동으로 생성됩니다.");
         q2.addAnswer("맞습니다!");
+    }
+
+    // 샘플 회원 (dev·test 공통). 로컬 개발·테스트 전용 계정이다.
+    // user1 / 1234, user2 / 1234
+    @Transactional
+    public void work2() {
+        if (userRepository.count() > 0) return;
+
+        userService.join("user1", "1234", "user1@test.com");
+        userService.join("user2", "1234", "user2@test.com");
     }
 }

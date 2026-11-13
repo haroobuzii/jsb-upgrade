@@ -29,6 +29,12 @@ public class SecurityConfig {
                 // H2 콘솔의 폼에는 CSRF 토큰이 없으므로 그 경로만 CSRF 검사에서 제외
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers("/h2-console/**")
+                )
+                // 폼 로그인: 로그인 화면은 우리가 만든 /users/login, 같은 주소로 POST 하면 Security 가 처리
+                // 성공하면 / 로, 실패하면 /users/login?error 로
+                .formLogin(formLogin -> formLogin
+                        .loginPage("/users/login")
+                        .defaultSuccessUrl("/")
                 );
 
         return http.build();

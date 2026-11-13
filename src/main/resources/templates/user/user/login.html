@@ -1,0 +1,24 @@
+<html layout:decorate="~{layout}" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <title>로그인</title>
+</head>
+<div layout:fragment="content" class="container my-3">
+    <div class="my-3 border-bottom">
+        <h4>로그인</h4>
+    </div>
+    <!--/* name 은 username, password 여야 Spring Security 가 읽는다. th:action 이 CSRF 토큰을 넣는다 */-->
+    <form th:action method="post">
+        <!--/* 로그인 실패 시 Security 가 /users/login?error 로 보낸다 */-->
+        <div th:if="${param.error}" class="alert alert-danger">아이디 또는 비밀번호를 확인해 주세요.</div>
+        <div class="mb-3">
+            <label for="username" class="form-label">아이디</label>
+            <input type="text" name="username" id="username" class="form-control" autofocus>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">비밀번호</label>
+            <input type="password" name="password" id="password" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">로그인</button>
+    </form>
+</div>
+</html>

@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -59,5 +61,25 @@ class UserControllerTest {
         assertThat(signup("sameuser", "pw1234!", "pw1234!", "second@test.com"))
                 .hasStatusOk()
                 .bodyText().contains("이미 사용 중인 아이디입니다.");
+    }
+
+    @Test
+    @DisplayName("POST /users/login : 샘플 회원 user1 로그인 성공 → / 로, 인증됨")
+    void t4() {
+        assertThat(mvc.post().uri("/users/login").with(csrf())
+                .param("username", "user1").param("password", "1234"))
+                .hasStatus(HttpStatus.FOUND)
+                .hasRedirectedUrl("/")
+                .matches(authenticated().withUsername("user1"));
+    }
+
+    @Test
+    @DisplayName("POST /users/login : 비밀번호가 틀리면 /users/login?error, 인증 안 됨")
+    void t5() {
+        assertThat(mvc.post().uri("/users/login").with(csrf())
+                .param("username", "user1").param("password", "wrong"))
+                .hasStatus(HttpStatus.FOUND)
+                .hasRedirectedUrl("/users/login?error")
+                .matches(unauthenticated());
     }
 }
