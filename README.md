@@ -370,3 +370,9 @@ com.mysite.sbb
 - 작업: `domain/user/user/entity/SiteUser extends BaseEntity`(`username`·`email`은 `@Column(unique = true)`, `password`), `UserRepository`(`findByUsername`, `existsByUsername`, `existsByEmail`)
 - 이유: 교재 3-06. 이름이 `User`가 아닌 이유는 `user`가 여러 DB의 예약어라서. 교재는 `Long id` + `@Setter`, 우리는 다른 엔티티와 같이 `BaseEntity`(int id, 작성·수정일시) + 생성자
 - 결과: `create table site_user (..., email, password, username ...)`와 `unique (email)`, `unique (username)` 제약 생성. 테스트 27개 통과
+
+### 014-02 회원가입, PasswordEncoder와 UserService.join
+- 링크: [014-02](https://github.com/haroobuzii/jsb-upgrade/commit/014-02)
+- 작업: `SecurityConfig`에 `PasswordEncoder`(BCrypt) 빈, `UserService.join(username, password, email)`(중복 아이디·이메일 사전 확인 → `ServiceException(field, message)`, 비밀번호 암호화 후 저장), `global/exception/ServiceException`, `UserServiceTest` t1·t2
+- 이유: 교재 3-06 — 비밀번호는 평문이 아니라 BCrypt 해시로 저장. 교재는 저장 시 `DataIntegrityViolationException`을 잡아 "이미 등록된 사용자입니다." 하나로 알려 준다. 저장 전에 확인하면 아이디와 이메일 중 무엇이 겹쳤는지 칸별로 알려 줄 수 있다(AI 판단, unique 제약은 그대로 최종 방어선)
+- 결과: 저장된 비밀번호가 `$2a$...` 해시이고 `matches`로만 확인 가능. 중복 시 `field`가 `username`/`email`. 테스트 29개 통과

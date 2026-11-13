@@ -4,6 +4,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 // 스프링 시큐리티 설정. 의존성만 넣으면 기본값: 모든 요청 인증 필요(→ /login), POST·PUT·DELETE 는 CSRF 토큰 검사
@@ -30,5 +32,11 @@ public class SecurityConfig {
                 );
 
         return http.build();
+    }
+
+    // 비밀번호 암호화기. BCrypt: 같은 비밀번호도 매번 다른 해시(솔트 포함), 원래 값으로 되돌릴 수 없다
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }
