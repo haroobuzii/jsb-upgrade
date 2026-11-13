@@ -57,7 +57,13 @@
 - 결과: 새 쉘에서 `java -version` → `25.0.4.1` 확인
 
 ### 000-02 개발 환경, 프로젝트 생성
-- 링크: (다음 커밋에서 추가)
+- 링크: [ad8df08](https://github.com/haroobuzii/jsb-upgrade/commit/ad8df08)
 - 작업: Spring Initializr로 프로젝트 생성(webmvc, lombok, devtools), `.gitignore`에 H2 DB 파일·`.DS_Store` 추가, README 작성
 - 이유: 의존성은 처음 필요해지는 단계에서 하나씩 추가하여 각 의존성의 역할을 이해하기 위함 (JPA·H2는 002, Thymeleaf는 006)
 - 결과: `./gradlew build` 성공, `bootRun` 후 `localhost:8080` 접속 시 Whitelabel 404 (컨트롤러가 없으므로 정상)
+
+### 000-03 개발 환경, GitHub 저장소 연결
+- 링크: (다음 커밋에서 추가)
+- 작업: `gh repo create`로 public 저장소 `haroobuzii/jsb-upgrade` 생성, `origin` 연결 후 `main` push, 000-02 커밋 링크 기록
+- 이유: 작업내역의 각 항목을 실제 커밋 페이지로 연결하여 단계별 코드 변화를 언제든 다시 볼 수 있게 하기 위함
+- 결과: GitHub 저장소 페이지에서 커밋과 README 확인
