@@ -328,3 +328,9 @@ com.mysite.sbb
 - 작업: `global/initData/DevInitData`(`@Profile("dev")`, `@Order(2)`, 300개 미만이면 "테스트 데이터입니다:[001]"~[300] 생성), `BaseInitData`에 `@Order(1)`
 - 이유: 교재 3-02는 페이징을 보려고 테스트 코드로 300개를 만든다(테스트가 개발 DB를 쓰므로 가능). 우리 테스트는 메모리 DB라 그 방법이 안 된다 → 결정 사항대로 InitData에서, 단 dev에만(test에 넣으면 질문 2개를 전제로 한 테스트가 깨짐, AI 판단). 빈 DB에서 기본 샘플이 먼저 들어가도록 순서 지정
 - 결과: 재시작 로그 `DevInitData.work1` 트랜잭션, 목록 303행(페이징 전이라 한 화면에 전부). 테스트 25개 통과(test 프로파일은 그대로 2개)
+
+### 012-02 페이징, Pageable과 페이지 버튼
+- 링크: [012-02](https://github.com/haroobuzii/jsb-upgrade/commit/012-02)
+- 작업: `QuestionService.getList(page)` → `PageRequest.of(page, 10, 작성일시 내림차순)`, `findAll(Pageable)`이 `Page<Question>` 반환. 컨트롤러 `?page=`(기본 0) → 모델 `paging`. 템플릿에 이전·번호(현재 ±5)·다음 버튼. `QuestionServiceTest` t1
+- 이유: 교재 3-02. 교재는 리포지터리에 `findAll(Pageable)`을 다시 선언하지만 `JpaRepository`에 이미 있어 생략. 페이지 번호는 URL에선 0부터(스프링 규칙), 화면에는 1부터 보이게 `page + 1`(AI 판단, 교재는 0부터 표시)
+- 결과: `/questions?page=3` → [270]~[261] 10개, 4번 버튼 활성. SQL에 `offset ... rows fetch first ? rows only`와 `count(q1_0.id)` 두 쿼리. 테스트 26개 통과

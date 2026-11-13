@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,8 +16,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
 
 @Controller
 // final 필드를 매개변수로 받는 생성자를 만들어 준다 → 스프링이 그 생성자로 QuestionService 를 주입(생성자 주입)
@@ -28,11 +29,12 @@ public class QuestionController {
     // 컨트롤러는 리포지터리를 직접 쓰지 않고 서비스를 통한다.
     private final QuestionService questionService;
 
-    @GetMapping // GET /questions
+    @GetMapping // GET /questions?page=0
     // Model: 컨트롤러 → 템플릿으로 데이터를 넘기는 바구니. 스프링이 만들어서 넣어 준다.
-    public String list(Model model) {
-        List<Question> questionList = questionService.getList();
-        model.addAttribute("questionList", questionList); // 템플릿에서 ${questionList}
+    // @RequestParam(defaultValue = "0"): ?page= 가 없으면 첫 페이지(0)
+    public String list(@RequestParam(defaultValue = "0") int page, Model model) {
+        Page<Question> paging = questionService.getList(page);
+        model.addAttribute("paging", paging); // 템플릿에서 ${paging}: 현재 페이지 질문들 + 페이지 정보
 
         // @ResponseBody 가 없으므로 뷰 이름 → templates/question/question/list.html
         return "question/question/list";
