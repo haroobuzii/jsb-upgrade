@@ -454,3 +454,9 @@ com.mysite.sbb
 - 작업: `Answer.voters`(`@ManyToMany Set<SiteUser>`, `answer_voters`), `Answer.vote`, `AnswerService.vote`, `POST /questions/{questionId}/answers/{id}/vote`, 상세의 답변마다 추천 버튼·개수, 테스트 t9
 - 이유: 교재 3-10 답변 추천을 질문 추천과 같은 방식(POST, Set)으로
 - 결과: 브라우저에서 1번 질문의 답변 추천 0 → 1. 테스트 48개 통과
+
+### 019-01 앵커, 완료 답변 위치로 이동
+- 링크: [019-01](https://github.com/haroobuzii/jsb-upgrade/commit/019-01)
+- 작업: 상세의 답변 카드에 `th:id="|answer_${answer.id}|"`, 답변 등록·수정·추천 후 `redirect:/questions/{qid}#answer_{id}`. 등록 때는 `answerRepository.flush()`로 INSERT를 먼저 내보내 id 확보. 테스트의 리다이렉트 주소 갱신
+- 이유: 교재 3-11 — 답변을 달거나 추천하면 페이지 맨 위로 돌아가 방금 작업한 답변을 다시 찾아야 한다. URL 끝의 `#id`(앵커)로 그 요소까지 스크롤. 우리 답변 생성은 cascade PERSIST라 트랜잭션 끝까지 id가 0 → `flush`로 해결(교재는 `save` 후 id 사용)
+- 결과: 브라우저에서 2번 질문에 답변 등록 → `/questions/2#answer_6`, `id="answer_6"` 요소로 스크롤(내장 브라우저는 Bootstrap의 smooth 스크롤이 느려 즉시 스크롤로 위치 확인). 테스트 48개 통과

@@ -23,7 +23,11 @@ public class AnswerService {
     @Transactional
     public Answer write(int questionId, SiteUser author, String content) {
         Question question = questionService.getQuestion(questionId); // 없으면 404
-        return question.addAnswer(author, content);
+        Answer answer = question.addAnswer(author, content);
+        // 원래 INSERT 는 트랜잭션 끝에 나가서 지금 id 는 0이다.
+        // 리다이렉트 주소에 #answer_{id} 를 붙이려면 id 가 필요하므로 지금 INSERT 를 내보낸다
+        answerRepository.flush();
+        return answer;
     }
 
     // URL 의 질문 번호와 답변이 속한 질문이 다르면 없는 답변으로 본다 (/questions/1/answers/5 인데 5번이 2번 질문의 답변이면 404)

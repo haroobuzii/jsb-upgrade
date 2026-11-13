@@ -52,10 +52,11 @@ public class AnswerController {
             return "question/question/detail";
         }
 
-        answerService.write(questionId, userService.getUser(principal.getName()), form.content());
+        Answer answer = answerService.write(questionId, userService.getUser(principal.getName()), form.content());
 
         // 처리 후에는 상세 화면으로 리다이렉트 (새로고침해도 POST 가 다시 전송되지 않는다: PRG 패턴)
-        return "redirect:/questions/" + questionId;
+        // #answer_{id}: 그 답변 위치(앵커)로 바로 스크롤
+        return "redirect:/questions/%d#answer_%d".formatted(questionId, answer.getId());
     }
 
     // 답변 수정 폼: GET /questions/{questionId}/answers/{id}/modify
@@ -88,7 +89,7 @@ public class AnswerController {
 
         answerService.modify(questionId, id, principal.getName(), form.content());
 
-        return "redirect:/questions/" + questionId;
+        return "redirect:/questions/%d#answer_%d".formatted(questionId, id);
     }
 
     // 답변 삭제: DELETE /questions/{questionId}/answers/{id}
@@ -106,6 +107,6 @@ public class AnswerController {
     public String vote(@PathVariable int questionId, @PathVariable int id, Principal principal) {
         answerService.vote(questionId, id, userService.getUser(principal.getName()));
 
-        return "redirect:/questions/" + questionId;
+        return "redirect:/questions/%d#answer_%d".formatted(questionId, id);
     }
 }

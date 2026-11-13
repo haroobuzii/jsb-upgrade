@@ -34,7 +34,7 @@ class AnswerControllerTest {
     void t1() {
         assertThat(mvc.post().uri("/questions/2/answers").with(csrf()).with(user("user1")).param("content", "새 답변"))
                 .hasStatus(HttpStatus.FOUND)
-                .hasRedirectedUrl("/questions/2");
+                .redirectedUrl().matches("/questions/2#answer_\\d+"); // 새 답변 위치로 (앵커)
 
         assertThat(questionRepository.findById(2).get().getAnswers())
                 .filteredOn(a -> a.getContent().equals("새 답변"))
@@ -98,7 +98,7 @@ class AnswerControllerTest {
 
         assertThat(mvc.put().uri("/questions/2/answers/1/modify").with(user("user1")).with(csrf()).param("content", "수정된 답변"))
                 .hasStatus(HttpStatus.FOUND)
-                .hasRedirectedUrl("/questions/2");
+                .hasRedirectedUrl("/questions/2#answer_1");
 
         assertThat(answerRepository.findById(1).get().getContent()).isEqualTo("수정된 답변");
     }
@@ -130,7 +130,7 @@ class AnswerControllerTest {
     @DisplayName("답변 추천: POST /questions/2/answers/1/vote, 같은 사람은 1표")
     void t9() {
         assertThat(mvc.post().uri("/questions/2/answers/1/vote").with(user("user2")).with(csrf()))
-                .hasStatus(HttpStatus.FOUND).hasRedirectedUrl("/questions/2");
+                .hasStatus(HttpStatus.FOUND).hasRedirectedUrl("/questions/2#answer_1");
         mvc.post().uri("/questions/2/answers/1/vote").with(user("user2")).with(csrf()).exchange();
 
         assertThat(answerRepository.findById(1).get().getVoters()).extracting("username").containsExactly("user2");
