@@ -36,12 +36,17 @@ public class QuestionController {
     private final QuestionService questionService;
     private final UserService userService;
 
-    @GetMapping // GET /questions?page=0
+    @GetMapping // GET /questions?page=0&kw=검색어
     // Model: 컨트롤러 → 템플릿으로 데이터를 넘기는 바구니. 스프링이 만들어서 넣어 준다.
     // @RequestParam(defaultValue = "0"): ?page= 가 없으면 첫 페이지(0)
-    public String list(@RequestParam(defaultValue = "0") int page, Model model) {
-        Page<Question> paging = questionService.getList(page);
+    public String list(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "") String kw,
+            Model model
+    ) {
+        Page<Question> paging = questionService.getList(page, kw);
         model.addAttribute("paging", paging); // 템플릿에서 ${paging}: 현재 페이지 질문들 + 페이지 정보
+        model.addAttribute("kw", kw);         // 검색창에 검색어를 남기고, 페이지 링크에도 붙인다
 
         // @ResponseBody 가 없으므로 뷰 이름 → templates/question/question/list.html
         return "question/question/list";

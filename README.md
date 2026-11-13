@@ -472,3 +472,9 @@ com.mysite.sbb
 - 작업: `HtmlRenderer.builder().escapeHtml(true).sanitizeUrls(true)`, `MarkdownUtilTest` t2(`<script>` → `&lt;script&gt;`), t3(`javascript:` 링크 제거)
 - 이유: 결정 사항(마크다운 XSS 방지). 마크다운 문법은 HTML로 바꾸되, 사용자가 직접 쓴 HTML은 글자로 보여 주고 위험한 링크 주소는 지운다
 - 결과: 같은 306번 질문이 이제 제목·목록·굵게는 그대로, `<script>...</script>`는 글자로 표시되고 탭 제목은 "마크다운과 XSS 확인 | SBB"(실행 안 됨). 테스트 51개 통과
+
+### 021-01 검색, 시작 Specification 검색
+- 링크: [021-01](https://github.com/haroobuzii/jsb-upgrade/commit/021-01)
+- 작업: `QuestionRepository`에 `JpaSpecificationExecutor`, `QuestionService.search(kw)`(JPA Criteria: 질문 글쓴이·답변·답변 글쓴이 LEFT JOIN, `distinct`, 제목·내용·글쓴이·답변 내용·답변 글쓴이 중 하나라도 `like %kw%`), `getList(page, kw)`, 목록 위에 검색 폼(GET `kw`), 페이지 링크에 `kw` 유지, `QuestionServiceTest` t2
+- 이유: 교재 3-13 1단계(Specification). 교재는 검색어·페이지를 JS로 숨은 폼에 넣어 보낸다. Thymeleaf `@{/questions(page=..., kw=...)}`는 검색어를 URL 인코딩해 링크에 붙여 주므로 JS 없이 GET 폼 + 링크로 처리(AI 판단)
+- 결과: "데이터입니다:[2" 검색 → 100건, 번호 100부터, 다음 페이지 링크 `?page=1&kw=...`. 답변 2개 달린 질문도 1건(distinct). 테스트 52개 통과

@@ -1,15 +1,19 @@
 package com.mysite.sbb.domain.question.question.service;
 
+import com.mysite.sbb.domain.question.answer.entity.Answer;
 import com.mysite.sbb.domain.question.question.entity.Question;
 import com.mysite.sbb.domain.question.question.repository.QuestionRepository;
 import com.mysite.sbb.domain.user.user.entity.SiteUser;
 import com.mysite.sbb.global.exception.DataNotFoundException;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -25,11 +29,30 @@ public class QuestionService {
     // readOnly = true: 조회만 하는 트랜잭션.
     // 변경 감지(더티체킹)를 위한 스냅샷을 만들지 않아 조금 가볍고, 실수로 값을 바꿔도 UPDATE 되지 않는다.
     // page: 0부터 시작하는 페이지 번호. 한 페이지에 10개, 최신 글이 먼저(작성일시 내림차순)
-    // findAll(Pageable)은 JpaRepository 에 이미 있다 → SELECT ... LIMIT 10 OFFSET page*10 + 전체 개수 COUNT 쿼리
+    // kw: 검색어. 비어 있으면 like '%%' 라 전체가 나온다
     @Transactional(readOnly = true)
-    public Page<Question> getList(int page) {
+    public Page<Question> getList(int page, String kw) {
         Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Order.desc("createDate")));
-        return questionRepository.findAll(pageable);
+        return questionRepository.findAll(search(kw), pageable);
+    }
+
+    // 검색 조건(Specification): 제목, 내용, 질문 글쓴이, 답변 내용, 답변 글쓴이 중 하나라도 kw 를 포함 (교재 3-13)
+    // JPA Criteria API 로 자바 코드로 WHERE 절을 만든다
+    private Specification<Question> search(String kw) {
+        return (q, query, cb) -> {
+            query.distinct(true); // 답변 여러 개와 조인하면 같은 질문이 여러 줄 → 중복 제거
+            Join<Question, SiteUser> u1 = q.join("author", JoinType.LEFT);   // 질문 글쓴이
+            Join<Question, Answer> a = q.join("answers", JoinType.LEFT);     // 답변 (없는 질문도 나오게 LEFT)
+            Join<Answer, SiteUser> u2 = a.join("author", JoinType.LEFT);     // 답변 글쓴이
+            String pattern = "%" + kw + "%";
+            return cb.or(
+                    cb.like(q.get("subject"), pattern),
+                    cb.like(q.get("content"), pattern),
+                    cb.like(u1.get("username"), pattern),
+                    cb.like(a.get("content"), pattern),
+                    cb.like(u2.get("username"), pattern)
+            );
+        };
     }
 
     // 없는 id면 DataNotFoundException → 404 (get() 이었을 때는 NoSuchElementException → 500)
