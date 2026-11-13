@@ -102,7 +102,13 @@
 - 결과: 앱 재시작 로그에 `[sbb]`(앱 이름) 그대로 출력 → yaml을 읽음, `/sbb` 200, `./gradlew test` 통과
 
 ### 002-02 JPA·H2, H2와 dev/test 프로파일
-- 링크: (다음 커밋에서 추가)
+- 링크: [5f1960c](https://github.com/haroobuzii/jsb-upgrade/commit/5f1960c)
 - 작업: `h2`, `spring-boot-h2console` 의존성 추가, `profiles.active: dev`, `application-dev.yaml`(`jdbc:h2:./db_dev;MODE=MySQL`), `application-test.yaml`(`jdbc:h2:mem:db_test;MODE=MySQL`), 테스트 2개에 `@ActiveProfiles("test")`
 - 이유: 개발 DB와 테스트 DB를 분리해 테스트가 개발 데이터를 건드리지 않게 하고(테스트는 메모리 DB라 끝나면 사라짐), DB 파일을 프로젝트 폴더에 둬 이 프로젝트 전용으로 만들기 위함. dev·test 모두 `MODE=MySQL`로 같은 SQL 문법 사용 (14163 `005`, 14168 2강)
 - 결과: 앱은 `profile is active: "dev"`, 테스트 2개는 `"test"`로 실행. `/h2-console` 접속 가능하지만 연결 시 `Database ... db_dev not found` → 앱에 아직 JDBC(HikariCP)가 없어 DB 파일이 만들어지지 않음. 002-03에서 JPA를 넣으면 해결 (교재가 빈 `local.mv.db`를 직접 만든 이유와 같음)
+
+### 002-03 JPA·H2, 완료 JPA와 SQL 로그
+- 링크: (다음 커밋에서 추가)
+- 작업: `spring-boot-starter-data-jpa`, `spring-boot-starter-data-jpa-test` 추가. `ddl-auto: update`, SQL 출력(`show-sql`, `format_sql`, `highlight_sql`, `use_sql_comments`), 바인딩·추출 값과 트랜잭션 TRACE 로그, `ansi` 컬러 로그, `hikari.auto-commit: false`
+- 이유: JPA가 JDBC 커넥션 풀(HikariCP)을 함께 가져와 앱이 시작하며 DB에 연결 → 002-02의 "db_dev not found" 해결. 실행되는 SQL과 값을 로그로 봐야 JPA 동작을 이해할 수 있음 (14163 `006`, 14168 `002`). 교재의 `hibernate.dialect`는 Hibernate가 자동 선택하므로 생략
+- 결과: 시작 로그 `HikariPool-1 - Added connection ... jdbc:h2:./db_dev`, `Database dialect: H2Dialect`(자동), 프로젝트 폴더에 `db_dev.mv.db` 생성·git 추적 제외 확인. 브라우저 H2 콘솔 연결 성공. 테스트는 `jdbc:h2:mem:db_test`에 연결, `./gradlew test` 통과
