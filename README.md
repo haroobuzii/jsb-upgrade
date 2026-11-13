@@ -340,3 +340,9 @@ com.mysite.sbb
 - 작업: 번호 = `paging.totalElements - (paging.number * paging.size) - loop.index`
 - 이유: 교재 3-03 — `loop.count`는 페이지마다 1부터 다시 시작한다. 전체 개수에서 앞 페이지들과 현재 순번을 빼면 최신 글이 가장 큰 번호이고 페이지가 넘어가도 번호가 이어진다
 - 결과: 0페이지 303~294, 1페이지 293~284, 마지막(30) 페이지 3~1. 테스트 26개 통과
+
+### 012-04 페이징, 답변 개수 표시 (N+1 확인)
+- 링크: [012-04](https://github.com/haroobuzii/jsb-upgrade/commit/012-04)
+- 작업: 목록 제목 옆에 답변이 있으면 `#lists.size(question.answers)`를 빨간 글씨로. 목록 테스트에 개수 확인 추가
+- 이유: 교재 3-04. 다만 `question.answers`는 LAZY라 질문마다 답변 조회 SQL이 따로 나간다
+- 결과: 1·2번 질문 옆에 1, 2 표시. 그런데 한 페이지(질문 10개)를 그리는 데 SQL 12번 = 목록 1 + 개수 1 + **답변 10번**(`where a1_0.question_id=?`) → N+1 문제. 다음 커밋에서 해결. 테스트 26개 통과
