@@ -364,3 +364,9 @@ com.mysite.sbb
 - 작업: `layout.html`에 `<meta name="_csrf" th:content="${_csrf.token}">`. 테스트: 토큰 없는 POST → 403(t4), 질문 등록 폼에 hidden `_csrf` 포함
 - 이유: CSRF는 다른 사이트가 사용자 몰래 우리 사이트로 요청을 보내는 공격. Security는 우리 페이지가 준 토큰이 있는 요청만 받는다. 폼은 `th:action`이 토큰을 자동으로 넣고(14168 46강), JS로 만드는 요청(017 삭제 링크)은 메타 태그의 토큰을 쓴다(14168 layout)
 - 결과: 모든 페이지 `<head>`에 `_csrf` 메타. 테스트 27개 통과
+
+### 014-01 회원가입, 시작 SiteUser 엔티티
+- 링크: [014-01](https://github.com/haroobuzii/jsb-upgrade/commit/014-01)
+- 작업: `domain/user/user/entity/SiteUser extends BaseEntity`(`username`·`email`은 `@Column(unique = true)`, `password`), `UserRepository`(`findByUsername`, `existsByUsername`, `existsByEmail`)
+- 이유: 교재 3-06. 이름이 `User`가 아닌 이유는 `user`가 여러 DB의 예약어라서. 교재는 `Long id` + `@Setter`, 우리는 다른 엔티티와 같이 `BaseEntity`(int id, 작성·수정일시) + 생성자
+- 결과: `create table site_user (..., email, password, username ...)`와 `unique (email)`, `unique (username)` 제약 생성. 테스트 27개 통과
