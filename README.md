@@ -207,3 +207,9 @@ com.mysite.sbb
 - 작업: `spring-boot-starter-thymeleaf`, `spring-boot-starter-thymeleaf-test` 추가. dev 프로파일에 `thymeleaf.cache: false`, `prefix: file:src/main/resources/templates/`
 - 이유: 질문 목록을 HTML로 보여 주려면 템플릿 엔진이 필요하다(교재 2-07). 개발 중에는 캐시를 끄고(14163 29강 "타임리프 캐시는 오직 개발환경에서만 꺼야"), 소스 폴더 템플릿을 직접 읽어(14168) html 수정이 새로고침만으로 반영되게 함
 - 결과: 앱 재시작 정상, 테스트 통과
+
+### 006-02 질문 목록, /question/list와 템플릿
+- 링크: [006-02](https://github.com/haroobuzii/jsb-upgrade/commit/006-02)
+- 작업: `QuestionController`(`@RequiredArgsConstructor` 생성자 주입, `GET /question/list`, `Model`에 `questionList`), `templates/question/question/list.html`(`th:each`, `th:text`), `QuestionControllerTest` t1
+- 이유: 교재 2-07 그대로 컨트롤러가 리포지터리로 목록을 조회해 Model로 템플릿에 넘긴다(서비스는 006-04). 템플릿 위치는 패키지와 같은 `question/question/list.html`(14168 `post/post/list.html` 방식, AI 판단). 템플릿 주석은 응답에 나가지 않는 Thymeleaf 주석 `<!--/* */-->` 사용
+- 결과: 브라우저에서 `/question/list`에 번호·제목·작성일시 2건 표시. 템플릿 수정이 재컴파일 없이 새로고침만으로 반영(006-01 prefix 설정). 테스트 16개 통과
