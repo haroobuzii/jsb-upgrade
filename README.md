@@ -149,3 +149,9 @@
 - 작업: `global/initData/BaseInitData`(`ApplicationRunner` 빈, `@Lazy self`, `@Transactional work1()`, 데이터가 있으면 건너뜀). 질문 2개 + 2번 질문에 답변 2개. `Question.addAnswer(content)` 추가
 - 이유: 조회·수정·삭제 테스트에는 미리 들어 있는 데이터가 필요하다. 교재는 테스트 안에서 저장하고, 14163은 14강부터 `TestInitData`, 14168은 `BaseInitData`로 앱 시작 시 생성. 로드맵에서는 005였지만 004의 테스트에 필요해서 앞당김(AI 판단). 답변은 `addAnswer()`로 만들어 `save` 없이 cascade PERSIST로 저장(14163 21강)
 - 결과: H2 콘솔에서 질문 2건, 2번 질문의 답변 2건 확인. 로그에 `BaseInitData.work1` 트랜잭션 완료
+
+### 004-03 리포지터리, 조회 쿼리 메서드
+- 링크: [004-03](https://github.com/haroobuzii/jsb-upgrade/commit/004-03)
+- 작업: `QuestionRepository`에 `findBySubject`, `findBySubjectAndContent`(둘 다 `Optional`), `findBySubjectLike`. 테스트 t2~t6(findAll, findById, findBySubject, And, Like)
+- 이유: 메서드 이름 규칙(findBy + 필드 + And/Like…)만으로 JPA가 쿼리를 만든다(교재 2-05, 14163 16~17강). 결과가 없을 수 있는 단건 조회는 결정 사항대로 `Optional`
+- 결과: 테스트 로그의 SQL `where q1_0.subject=?`, `where q1_0.subject=? and q1_0.content=?`, `where q1_0.subject like ? escape '\'` 확인. 6개 통과
