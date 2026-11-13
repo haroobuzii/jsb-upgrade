@@ -442,3 +442,9 @@ com.mysite.sbb
 - 작업: `BaseEntity.isModified()`(수정 일시가 작성 일시와 다르면 true), 상세의 질문·답변에 수정된 경우만 "modified at" 배지, 리포지터리 테스트에 `isModified` 확인
 - 이유: 교재 3-09는 이때 `modifyDate` 필드를 추가하고 null이 아니면 보여 준다. 우리는 003부터 Auditing이 처음 저장 때도 `modifyDate`를 채우므로(작성 일시와 같은 값) "같지 않음"으로 수정 여부를 판단
 - 결과: 브라우저에서 user2가 305번 질문을 만들고 수정 → "modified at"과 작성 일시 두 배지. 수정 안 한 1번 질문은 배지 없음. 테스트 46개 통과
+
+### 018-01 추천, 시작 질문 추천(POST)
+- 링크: [018-01](https://github.com/haroobuzii/jsb-upgrade/commit/018-01)
+- 작업: `Question.voters`(`@ManyToMany Set<SiteUser>`, 연결 테이블 `question_voters`), `Question.vote`, `QuestionService.vote`, `POST /questions/{id}/vote`, 상세에 추천 버튼과 개수 배지(`<a method="POST">` → global.js), 테스트 t13
+- 이유: 교재 3-10. 결정 사항대로 GET 대신 POST(상태 변경, CSRF 보호). `Set`이라 같은 사람이 여러 번 눌러도 1표
+- 결과: `create table question_voters (question_id, voters_id, primary key(...))`. 브라우저에서 305번 추천 → 배지 0 → 1. 테스트: 두 번 눌러도 user1·user2 2표, 비로그인은 로그인 화면. 47개 통과

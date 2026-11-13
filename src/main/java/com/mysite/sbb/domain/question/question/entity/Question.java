@@ -5,13 +5,16 @@ import com.mysite.sbb.domain.user.user.entity.SiteUser;
 import com.mysite.sbb.global.jpa.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static jakarta.persistence.CascadeType.PERSIST;
 import static jakarta.persistence.CascadeType.REMOVE;
@@ -42,6 +45,11 @@ public class Question extends BaseEntity {
     // new ArrayList<>(): 새 질문에서 바로 answers.add() 해도 NPE가 나지 않게 초기화
     @OneToMany(mappedBy = "question", cascade = {PERSIST, REMOVE}, orphanRemoval = true)
     private final List<Answer> answers = new ArrayList<>();
+
+    // 추천한 회원들. 질문(N) : 회원(N) → 연결 테이블 question_voters(question_id, voters_id)가 생긴다
+    // Set: 같은 회원이 두 번 들어가지 않는다 (한 사람은 한 번만 추천)
+    @ManyToMany
+    private final Set<SiteUser> voters = new HashSet<>();
 
     public Question(SiteUser author, String subject, String content) {
         this.author = author;
@@ -74,5 +82,10 @@ public class Question extends BaseEntity {
     // 같은 트랜잭션에서 꺼낸 답변은 answers 안의 객체와 "같은 인스턴스"라 equals 없이도 remove 된다
     public boolean deleteAnswer(Answer answer) {
         return answers.remove(answer);
+    }
+
+    // 추천: 이미 추천했으면 Set 이라 그대로. 트랜잭션 끝에 연결 테이블에 INSERT
+    public void vote(SiteUser voter) {
+        voters.add(voter);
     }
 }

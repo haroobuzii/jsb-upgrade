@@ -170,4 +170,19 @@ class QuestionControllerTest {
                 .hasRedirectedUrl("/questions");
         assertThat(questionRepository.findById(2)).isEmpty();
     }
+
+    @Test
+    @DisplayName("질문 추천: POST /questions/2/vote, 같은 사람이 두 번 해도 1표, 비로그인은 로그인 화면으로")
+    void t13() {
+        assertThat(mvc.post().uri("/questions/2/vote").with(user("user1")).with(csrf()))
+                .hasStatus(HttpStatus.FOUND).hasRedirectedUrl("/questions/2");
+        mvc.post().uri("/questions/2/vote").with(user("user1")).with(csrf()).exchange();
+        mvc.post().uri("/questions/2/vote").with(user("user2")).with(csrf()).exchange();
+
+        assertThat(questionRepository.findById(2).get().getVoters())
+                .extracting("username").containsExactlyInAnyOrder("user1", "user2");
+
+        assertThat(mvc.post().uri("/questions/2/vote").with(csrf()))
+                .hasStatus(HttpStatus.FOUND).redirectedUrl().endsWith("/users/login");
+    }
 }

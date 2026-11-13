@@ -134,4 +134,13 @@ public class QuestionController {
 
         return "redirect:/questions";
     }
+
+    // 추천: POST /questions/{id}/vote (상태를 바꾸므로 GET 이 아니라 POST, CSRF 보호)
+    @PostMapping("/{id}/vote")
+    @PreAuthorize("isAuthenticated()")
+    public String vote(@PathVariable int id, Principal principal) {
+        questionService.vote(id, userService.getUser(principal.getName()));
+
+        return "redirect:/questions/" + id;
+    }
 }

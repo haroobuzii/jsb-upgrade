@@ -65,4 +65,9 @@ public class QuestionService {
         checkAuthor(question, username, "삭제권한이 없습니다.");
         questionRepository.delete(question);
     }
+
+    @Transactional
+    public void vote(int id, SiteUser voter) {
+        getQuestion(id).vote(voter);
+    }
 }
