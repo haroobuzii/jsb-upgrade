@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -86,6 +87,15 @@ public class AnswerController {
         }
 
         answerService.modify(questionId, id, principal.getName(), form.content());
+
+        return "redirect:/questions/" + questionId;
+    }
+
+    // 답변 삭제: DELETE /questions/{questionId}/answers/{id}
+    @DeleteMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public String delete(@PathVariable int questionId, @PathVariable int id, Principal principal) {
+        answerService.delete(questionId, id, principal.getName());
 
         return "redirect:/questions/" + questionId;
     }

@@ -109,4 +109,20 @@ class AnswerControllerTest {
         assertThat(mvc.get().uri("/questions/1/answers/1/modify").with(user("user1")))
                 .hasStatus(HttpStatus.NOT_FOUND);
     }
+
+    @Test
+    @DisplayName("답변 삭제: 남(user1)은 403, 글쓴이(user2)는 DELETE 로 삭제 (orphanRemoval)")
+    void t8() {
+        assertThat(mvc.delete().uri("/questions/2/answers/2").with(user("user1")).with(csrf()))
+                .hasStatus(HttpStatus.FORBIDDEN);
+        assertThat(answerRepository.findById(2)).isPresent();
+
+        assertThat(mvc.delete().uri("/questions/2/answers/2").with(user("user2")).with(csrf()))
+                .hasStatus(HttpStatus.FOUND)
+                .hasRedirectedUrl("/questions/2");
+        // 테스트는 전체가 한 트랜잭션(롤백)이라 아직 DELETE 가 안 나갔다. 앱에서는 서비스 트랜잭션이 끝날 때 나간다
+        answerRepository.flush();
+        assertThat(answerRepository.findById(2)).isEmpty();
+        assertThat(questionRepository.findById(2)).isPresent(); // 질문은 그대로
+    }
 }

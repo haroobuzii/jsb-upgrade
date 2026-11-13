@@ -93,7 +93,7 @@
 ### 엔티티와 JPA
 | 항목 | 결정 |
 |---|---|
-| `BaseEntity` | 2-04부터. `@MappedSuperclass`, `id`, `createDate`/`modifyDate`(Auditing). id 기준 `equals/hashCode`는 **필요해지는 시점(컬렉션에서 자식 삭제: 017 또는 023)에 실패를 먼저 보이고 추가** (14168 37강 방식, 2026-11-13 변경) |
+| `BaseEntity` | 2-04부터. `@MappedSuperclass`, `id`, `createDate`/`modifyDate`(Auditing). id 기준 `equals/hashCode`는 **필요해지는 시점(컬렉션에서 자식 삭제: 017 또는 023)에 실패를 먼저 보이고 추가** (14168 37강 방식, 2026-11-13 변경). 017-04 답변 삭제는 같은 영속성 컨텍스트의 같은 인스턴스를 remove 하므로 equals 없이 동작 → 아직 미도입 |
 | id 타입 | `int` (강사 방식). `Integer/Long` 관례와의 차이는 도입 시 설명 |
 | 변경 방식 | 엔티티 `@Setter` 금지, `modify()`·`addAnswer()` 같은 의미 있는 메서드로만 변경. 기본 생성자는 `@NoArgsConstructor(access = PROTECTED)` (14168은 public, JPA에는 protected로 충분하고 빈 엔티티 생성을 막음, 2026-11-13 결정) |
 | 연관관계 | 모든 `@ManyToOne`에 `fetch = LAZY`, `@OneToMany(cascade = {PERSIST, REMOVE}, orphanRemoval = true)`. 컬렉션 필드 이름은 강사 방식 `answers`(교재 `answerList`), `new ArrayList<>()`로 초기화 |

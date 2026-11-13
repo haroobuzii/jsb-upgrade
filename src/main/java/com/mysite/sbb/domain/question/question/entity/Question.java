@@ -69,4 +69,10 @@ public class Question extends BaseEntity {
         answers.add(answer);
         return answer;
     }
+
+    // 답변 삭제: 목록에서 빼기만 하면 orphanRemoval 로 DELETE (14168 Post.deleteComment)
+    // 같은 트랜잭션에서 꺼낸 답변은 answers 안의 객체와 "같은 인스턴스"라 equals 없이도 remove 된다
+    public boolean deleteAnswer(Answer answer) {
+        return answers.remove(answer);
+    }
 }

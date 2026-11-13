@@ -45,4 +45,12 @@ public class AnswerService {
     public void checkAuthor(Answer answer, String username, String message) {
         if (!answer.isAuthor(username)) throw new ResponseStatusException(HttpStatus.FORBIDDEN, message);
     }
+
+    // 답변 삭제: answerRepository.delete 대신 질문의 답변 목록에서 뺀다 (orphanRemoval)
+    @Transactional
+    public void delete(int questionId, int id, String username) {
+        Answer answer = getAnswer(questionId, id);
+        checkAuthor(answer, username, "삭제권한이 없습니다.");
+        answer.getQuestion().deleteAnswer(answer);
+    }
 }

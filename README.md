@@ -430,3 +430,9 @@ com.mysite.sbb
 - 작업: `GET·PUT /questions/{questionId}/answers/{id}/modify`, `Answer.isAuthor`·`modify`, `AnswerService.getAnswer(questionId, id)`(다른 질문의 답변이면 404)·`modify`·`checkAuthor`(403), `question/answer/modify.html`, 상세의 답변에 글쓴이 전용 "수정", 테스트 t6·t7
 - 이유: 교재 3-09 답변 수정(`/answer/modify/{id}`, 400). 질문 수정과 같은 방식(PUT, 403). 답변은 질문에 속한 자원이므로 URL에 질문 번호를 넣고, 둘이 맞지 않으면 없는 답변으로 처리(AI 판단)
 - 결과: 브라우저에서 user2가 1번 질문에 단 답변을 수정 → 상세로 돌아와 "(수정됨)". 남의 답변 403, 질문 번호 불일치 404. 테스트 45개 통과
+
+### 017-04 수정·삭제, 답변 삭제(DELETE, orphanRemoval)
+- 링크: [017-04](https://github.com/haroobuzii/jsb-upgrade/commit/017-04)
+- 작업: `DELETE /questions/{questionId}/answers/{id}`, `AnswerService.delete`(글쓴이만, 403) → `Question.deleteAnswer(answer)`(목록에서 제거 → orphanRemoval로 DELETE), 상세의 답변에 글쓴이 전용 "삭제", 테스트 t8
+- 이유: 교재는 `answerRepository.delete(answer)`. 결정 사항대로 질문을 통해 삭제(14168 `Post.deleteComment`). 같은 트랜잭션에서 꺼낸 답변은 목록 안의 객체와 같은 인스턴스라 `equals` 없이도 `remove`가 된다 → `equals/hashCode`는 아직 필요 없음
+- 결과: 브라우저에서 user2 답변 삭제 → "2개의 답변", 로그 `AnswerService.delete` 트랜잭션 + `delete` SQL. 남의 답변 403. 테스트에서는 한 트랜잭션이라 `flush()` 후 확인. 46개 통과
