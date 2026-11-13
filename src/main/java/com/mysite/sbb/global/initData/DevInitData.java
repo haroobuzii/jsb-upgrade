@@ -2,6 +2,8 @@ package com.mysite.sbb.global.initData;
 
 import com.mysite.sbb.domain.question.question.entity.Question;
 import com.mysite.sbb.domain.question.question.repository.QuestionRepository;
+import com.mysite.sbb.domain.user.user.entity.SiteUser;
+import com.mysite.sbb.domain.user.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
@@ -23,6 +25,7 @@ public class DevInitData {
     private DevInitData self;
 
     private final QuestionRepository questionRepository;
+    private final UserRepository userRepository;
 
     @Bean
     @Order(2)
@@ -34,8 +37,10 @@ public class DevInitData {
     public void work1() {
         if (questionRepository.count() >= 300) return; // 이미 만들었으면 건너뜀
 
+        SiteUser user1 = userRepository.findByUsername("user1").get();
+
         for (int i = 1; i <= 300; i++) {
-            questionRepository.save(new Question("테스트 데이터입니다:[%03d]".formatted(i), "내용무"));
+            questionRepository.save(new Question(user1, "테스트 데이터입니다:[%03d]".formatted(i), "내용무"));
         }
     }
 }

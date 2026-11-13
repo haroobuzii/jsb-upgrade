@@ -34,7 +34,7 @@ class AnswerRepositoryTest {
     void t1() {
         Question question = questionRepository.findById(2).get();
 
-        Answer answer = question.addAnswer("새 답변입니다.");
+        Answer answer = question.addAnswer(null, "새 답변입니다."); // 글쓴이는 이 테스트와 무관
         assertThat(answer.getId()).isEqualTo(0); // 아직 INSERT 전
 
         questionRepository.flush(); // 더티체킹 + cascade PERSIST → insert into answer

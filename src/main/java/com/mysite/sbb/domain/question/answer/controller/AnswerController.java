@@ -41,7 +41,7 @@ public class AnswerController {
             return "question/question/detail";
         }
 
-        answerService.write(questionId, form.content());
+        answerService.write(questionId, null, form.content()); // 글쓴이는 016-02에서 로그인 사용자로
 
         // 처리 후에는 상세 화면으로 리다이렉트 (새로고침해도 POST 가 다시 전송되지 않는다: PRG 패턴)
         return "redirect:/questions/" + questionId;

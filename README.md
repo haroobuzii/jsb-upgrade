@@ -394,3 +394,9 @@ com.mysite.sbb
 - 작업: `thymeleaf-extras-springsecurity6`, 내비게이션 바 `sec:authorize`(비로그인: 로그인·회원가입 / 로그인: 아이디·로그아웃), 로그아웃은 `POST /users/logout` 폼 버튼, `SecurityConfig.logout(logoutUrl, logoutSuccessUrl("/"))`, 테스트 t6·t7
 - 이유: 교재 3-07은 로그아웃을 GET 링크로 하려고 `logoutRequestMatcher(new AntPathRequestMatcher(...))`를 쓴다(Security 7에서 제거). 결정 사항대로 POST(CSRF 토큰 필요) — 다른 사이트가 몰래 로그아웃시키는 것을 막는다
 - 결과: 브라우저 로그인 → "user1 로그아웃", 로그아웃 클릭 → "로그인 회원가입". `GET /users/logout`은 404(로그아웃 안 됨). Boot 4.1.2가 관리하는 확장 이름은 Security 7에서도 `...springsecurity6`. 테스트 36개 통과
+
+### 016-01 글쓴이, 시작 author 필드와 화면 표시
+- 링크: [016-01](https://github.com/haroobuzii/jsb-upgrade/commit/016-01)
+- 작업: `Question.author`, `Answer.author`(`@ManyToOne(fetch = LAZY) SiteUser`), 생성자·`addAnswer`·서비스 `write`에 author 매개변수, 샘플 데이터는 회원을 먼저 만들고 질문1=user1, 질문2=user2, 답변=user1·user2. 목록에 "글쓴이" 열, 상세의 질문·답변에 글쓴이. 컨트롤러는 아직 `null`(016-02에서 로그인 사용자)
+- 이유: 교재 3-08. 결정 사항대로 모든 `@ManyToOne`은 LAZY. 016 이전 글은 author가 없으므로 템플릿에서 `?.`(안전 탐색)로 빈칸 처리
+- 결과: DDL `alter table question/answer add column author_id` + 외래키. dev의 기존 글은 글쓴이 빈칸, 테스트 DB 상세에는 user2·user1 표시. 테스트 36개 통과

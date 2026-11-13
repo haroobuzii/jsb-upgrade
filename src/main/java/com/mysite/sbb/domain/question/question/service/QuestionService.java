@@ -2,6 +2,7 @@ package com.mysite.sbb.domain.question.question.service;
 
 import com.mysite.sbb.domain.question.question.entity.Question;
 import com.mysite.sbb.domain.question.question.repository.QuestionRepository;
+import com.mysite.sbb.domain.user.user.entity.SiteUser;
 import com.mysite.sbb.global.exception.DataNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -37,7 +38,7 @@ public class QuestionService {
     }
 
     @Transactional
-    public Question write(String subject, String content) {
-        return questionRepository.save(new Question(subject, content));
+    public Question write(SiteUser author, String subject, String content) {
+        return questionRepository.save(new Question(author, subject, content));
     }
 }

@@ -22,7 +22,7 @@ class QuestionServiceTest {
     @DisplayName("getList: 한 페이지 10개, 최신 글 먼저, 전체 개수·페이지 수 제공")
     void t1() {
         // 샘플 2개 + 12개 = 14개 → 0페이지 10개, 1페이지 4개
-        for (int i = 1; i <= 12; i++) questionService.write("페이징 %02d".formatted(i), "내용");
+        for (int i = 1; i <= 12; i++) questionService.write(null, "페이징 %02d".formatted(i), "내용");
 
         Page<Question> page0 = questionService.getList(0);
         Page<Question> page1 = questionService.getList(1);

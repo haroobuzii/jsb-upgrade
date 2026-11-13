@@ -2,6 +2,7 @@ package com.mysite.sbb.global.initData;
 
 import com.mysite.sbb.domain.question.question.entity.Question;
 import com.mysite.sbb.domain.question.question.repository.QuestionRepository;
+import com.mysite.sbb.domain.user.user.entity.SiteUser;
 import com.mysite.sbb.domain.user.user.repository.UserRepository;
 import com.mysite.sbb.domain.user.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -33,30 +34,33 @@ public class BaseInitData {
     @Order(1) // DevInitData(2)보다 먼저: 빈 DB에서 기본 샘플(질문 1·2)이 먼저 들어가야 id가 1, 2로 고정된다
     ApplicationRunner baseInitDataApplicationRunner() {
         return args -> {
-            self.work1();
+            self.work1(); // 회원 먼저 (질문·답변의 글쓴이)
             self.work2();
         };
-    }
-
-    @Transactional
-    public void work1() {
-        if (questionRepository.count() > 0) return; // 이미 있으면 다시 만들지 않는다 (dev 파일 DB)
-
-        Question q1 = questionRepository.save(new Question("sbb가 무엇인가요?", "sbb에 대해서 알고 싶습니다."));
-        Question q2 = questionRepository.save(new Question("스프링부트 모델 질문입니다.", "id는 자동으로 생성되나요?"));
-
-        // save 를 다시 부르지 않아도 된다. 트랜잭션이 끝날 때 더티체킹 + cascade PERSIST 로 INSERT
-        q2.addAnswer("네 자동으로 생성됩니다.");
-        q2.addAnswer("맞습니다!");
     }
 
     // 샘플 회원 (dev·test 공통). 로컬 개발·테스트 전용 계정이다.
     // user1 / 1234, user2 / 1234
     @Transactional
-    public void work2() {
+    public void work1() {
         if (userRepository.count() > 0) return;
 
         userService.join("user1", "1234", "user1@test.com");
         userService.join("user2", "1234", "user2@test.com");
+    }
+
+    @Transactional
+    public void work2() {
+        if (questionRepository.count() > 0) return; // 이미 있으면 다시 만들지 않는다 (dev 파일 DB)
+
+        SiteUser user1 = userRepository.findByUsername("user1").get();
+        SiteUser user2 = userRepository.findByUsername("user2").get();
+
+        Question q1 = questionRepository.save(new Question(user1, "sbb가 무엇인가요?", "sbb에 대해서 알고 싶습니다."));
+        Question q2 = questionRepository.save(new Question(user2, "스프링부트 모델 질문입니다.", "id는 자동으로 생성되나요?"));
+
+        // save 를 다시 부르지 않아도 된다. 트랜잭션이 끝날 때 더티체킹 + cascade PERSIST 로 INSERT
+        q2.addAnswer(user1, "네 자동으로 생성됩니다.");
+        q2.addAnswer(user2, "맞습니다!");
     }
 }

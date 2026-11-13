@@ -26,7 +26,7 @@ class QuestionRepositoryTest {
     @Test
     @DisplayName("save: 저장하면 id가 생기고 작성·수정 일시가 자동으로 채워진다")
     void t1() {
-        Question q1 = new Question("sbb가 무엇인가요?", "sbb에 대해서 알고 싶습니다.");
+        Question q1 = new Question(null, "sbb가 무엇인가요?", "sbb에 대해서 알고 싶습니다."); // 글쓴이는 이 테스트와 무관
         assertThat(q1.getId()).isEqualTo(0); // int 기본값, 아직 저장 전
 
         questionRepository.save(q1);

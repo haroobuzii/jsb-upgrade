@@ -1,6 +1,7 @@
 package com.mysite.sbb.domain.question.answer.entity;
 
 import com.mysite.sbb.domain.question.question.entity.Question;
+import com.mysite.sbb.domain.user.user.entity.SiteUser;
 import com.mysite.sbb.global.jpa.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,11 +21,16 @@ public class Answer extends BaseEntity {
     @ManyToOne(fetch = LAZY)
     private Question question;
 
+    // 글쓴이. answer.author_id 외래키
+    @ManyToOne(fetch = LAZY)
+    private SiteUser author;
+
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    public Answer(Question question, String content) {
+    public Answer(Question question, SiteUser author, String content) {
         this.question = question;
+        this.author = author;
         this.content = content;
     }
 }

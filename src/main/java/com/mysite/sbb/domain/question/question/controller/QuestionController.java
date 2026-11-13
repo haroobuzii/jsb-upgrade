@@ -79,7 +79,7 @@ public class QuestionController {
     public String write(@ModelAttribute("form") @Valid WriteForm form, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) return "question/question/write"; // 입력값과 오류를 들고 폼으로
 
-        Question question = questionService.write(form.subject(), form.content());
+        Question question = questionService.write(null, form.subject(), form.content()); // 글쓴이는 016-02에서 로그인 사용자로
 
         return "redirect:/questions/" + question.getId();
     }
